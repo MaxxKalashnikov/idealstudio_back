@@ -1,7 +1,7 @@
--- user_account
+-- user_account: the user_type is either employee ot customer
 CREATE TABLE user_account(
 	user_account_id SERIAL PRIMARY KEY,
-	user_type VARCHAR(20) NOT NULL,
+	user_type VARCHAR(20) NOT NULL CHECK (user_type IN ('employee', 'customer')),
 	username VARCHAR(255) NOT NULL UNIQUE,
 	password VARCHAR(255) NOT NULL,
 	profile_picture_url VARCHAR(2048)
