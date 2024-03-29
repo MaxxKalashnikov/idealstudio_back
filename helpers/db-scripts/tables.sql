@@ -49,7 +49,7 @@ CREATE TABLE timeslot (
     timeslot_id SERIAL PRIMARY KEY,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
-	is_vailable BOOLEAN NOT NULL DEFAULT true,
+	is_available BOOLEAN NOT NULL DEFAULT true,
     employee_id INT NOT NULL REFERENCES employee(employee_id)
 );
 
