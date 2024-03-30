@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const {createToken, verifyToken} = require('./authentification/auth')
+const {createToken, verifyToken, registerUser, getUsers, authenticateUser} = require('./authentification/auth')
 const app = express();
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
@@ -13,20 +13,44 @@ app.get('/', (req, res) => {
     res.send('Hello world!')
 })
 
+//This is for testing access right
+app.get('/users', getUsers, (req, res) => {
+    // Access the users data attached to the request object
+    const users = req.users;
+    res.json(users);
+});
 
-app.post('/login', (req, res) => {
-    const { userName, password } = req.body;
-    console.log(`${userName} is trying to login`);
+app.post('/register', async (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ message: "Username and password are required" });
+    }
+    const success = await registerUser(username, password);
+    if (success) {
+        res.status(201).json({ message: "User registered successfully" });
+    } else {
+        res.status(500).json({ message: "Failed to register user" });
+    }
+});
 
-    if(userName === "max" && password === "1234"){
-        const token = createToken(userName);
-        res.cookie("access_token", token, {httpOnly: true,})
-        return res.json({message: "Login successful!", token: token})
+
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const user = await authenticateUser(username, password);
+        if (user) {
+            console.log('User defined')
+            const accessToken = createToken(username);
+            res.cookie('access_token', accessToken, { httpOnly: true });
+            res.status(200).json({ message: 'Login successful', token: accessToken });
+        } else {
+            res.status(401).json({ message: 'Invalid username or password' });
+        }
+    } catch (error) {
+        console.error('Error authenticating user:', error);
+        res.status(500).json({ message: 'Login failed' });
     }
-    else{
-        return res.status(401).json({message: "YOU SHALL NOT PASS!!!"})
-    }
-})
+});
 
 app.get('/login', (req, res)=>{
     res.sendFile(__dirname + "/public/login.html")
@@ -35,6 +59,9 @@ app.get('/login', (req, res)=>{
 app.get('/profile', verifyToken, async(req, res)=>{
     return res.status(200).json({message: "Hello profile!"})
 })
+
+
+
 
 app.listen(PORT, () =>{
     console.log('Server is running on port ' + PORT)
