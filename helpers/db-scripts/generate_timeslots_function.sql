@@ -13,16 +13,19 @@ DECLARE
 BEGIN
 	-- loop through every day
 	WHILE current_day <= end_date_param LOOP
-		current_slot := start_time_param;
-		-- loop throgh evey slot
-		WHILE current_slot < end_time_param LOOP
-			INSERT INTO timeslot (start_time, end_time, employee_id)
-			VALUES (current_day + current_slot, 
-				   current_day + (current_slot + INTERVAL '1 minute' * duration_minutes_param),
+		-- check if current_day is a weekday
+		IF EXTRACT(ISODOW FROM current_day) BETWEEN 1 AND 5 THEN
+			current_slot := start_time_param;
+			-- loop throgh evey slot
+			WHILE current_slot < end_time_param LOOP
+				INSERT INTO timeslot (start_time, end_time, employee_id)
+				VALUES (current_day + current_slot, 
+				    current_day + (current_slot + INTERVAL '1 minute' * duration_minutes_param),
 					employee_id_param);
-			-- increment the current_time
-			current_slot := current_slot + INTERVAL '1 minute' * duration_minutes_param;
-		END LOOP;
+				-- increment the current_time
+				current_slot := current_slot + INTERVAL '1 minute' * duration_minutes_param;
+			END LOOP;
+		END IF;
 		
 		current_day := current_day + INTERVAL '1 day';
 	END LOOP;
