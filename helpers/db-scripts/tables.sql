@@ -29,7 +29,7 @@ CREATE TABLE customer(
 	lastname VARCHAR(255) NOT NULL,
 	email VARCHAR(255) NOT NULL,
 	phone VARCHAR(20),
-	user_account_id INT REFERENCES user_account(user_account_id),
+	user_account_id INT REFERENCES user_account(user_account_id) ON DELETE SET NULL,
 	CONSTRAINT valid_email CHECK (email ~* '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'),
     CONSTRAINT valid_phone CHECK (phone ~ '^[0-9]{10}$') -- 10 digit phone
 );
@@ -74,7 +74,7 @@ CREATE TABLE review(
 	review_id SERIAL PRIMARY KEY,
 	rating INT NOT NULL CHECK (rating >= 0 AND rating <= 5),
 	comment TEXT,
-	appointment_id INT NOT NULL REFERENCES appointment(appointment_id)
+	appointment_id INT NOT NULL REFERENCES appointment(appointment_id) ON DELETE CASCADE
 );
 
 -- post --
@@ -91,6 +91,6 @@ CREATE TABLE reply(
 	reply_id SERIAL PRIMARY KEY,
 	content TEXT NOT NULL,
 	reply_created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	author_id INT NOT NULL REFERENCES user_account(user_account_id),
-	post_id INT NOT NULL REFERENCES post(post_id)
+	author_id INT NOT NULL REFERENCES user_account(user_account_id) ON DELETE CASCADE,
+	post_id INT NOT NULL REFERENCES post(post_id) ON DELETE CASCADE
 );
