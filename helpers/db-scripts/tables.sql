@@ -51,6 +51,7 @@ CREATE TABLE timeslot (
     end_time TIMESTAMP NOT NULL,
 	is_available BOOLEAN NOT NULL DEFAULT true,
     employee_id INT NOT NULL REFERENCES employee(employee_id)
+	CONSTRAINT unique_timeslot UNIQUE (start_time, end_time, employee_id)
 );
 
 -- valid input
