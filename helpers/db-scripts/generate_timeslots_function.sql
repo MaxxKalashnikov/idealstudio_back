@@ -1,4 +1,4 @@
-CREATE FUNCTION GenerateTimeSlots(
+CREATE OR REPLACE FUNCTION GenerateTimeSlots(
 	employee_id_param INT,
 	duration_minutes_param INT,
 	start_time_param TIME,
@@ -10,7 +10,14 @@ DECLARE
 	-- variables
 	current_day DATE := start_date_param;
 	current_slot TIME;
+	last_timeslot_date DATE;
 BEGIN
+	-- check the last timeslot date 
+	SELECT GetLastTimeslotDate(employee_id_param) INTO last_timeslot_date;
+	IF last_timeslot_date IS NOT NULL AND (start_date_param < CURRENT_DATE OR start_date_param <= last_timeslot_date) THEN
+    		RAISE EXCEPTION 'start_date_param must be greater than %', last_timeslot_date;
+	END IF;
+
 	-- loop through every day
 	WHILE current_day <= end_date_param LOOP
 		-- check if current_day is a weekday
@@ -31,9 +38,3 @@ BEGIN
 	END LOOP;
 END;
 $$ LANGUAGE plpgsql;
-		
--- valid function call example			
-select GenerateTimeSlots(1, 60, '09:00:00', '17:00:00', '2024-03-30', '2024-04-10');
-
-					
-					
