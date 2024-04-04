@@ -17,7 +17,7 @@ CREATE TABLE employee(
 	employee_type varchar(20) NOT NULL,
 	specialization VARCHAR(20) NOT NULL,
 	is_active BOOLEAN NOT NULL DEFAULT true,
-	user_account_id INT NOT NULL REFERENCES user_account(user_account_id),
+	user_account_id INT UNIQUE NOT NULL REFERENCES user_account(user_account_id),
 	CONSTRAINT valid_email CHECK (email ~* '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'),
     CONSTRAINT valid_phone CHECK (phone ~ '^[0-9]{10}$')
 );
@@ -29,7 +29,7 @@ CREATE TABLE customer(
 	lastname VARCHAR(255) NOT NULL,
 	email VARCHAR(255) NOT NULL,
 	phone VARCHAR(20),
-	user_account_id INT REFERENCES user_account(user_account_id) ON DELETE SET NULL,
+	user_account_id INT UNIQUE REFERENCES user_account(user_account_id) ON DELETE SET NULL,
 	CONSTRAINT valid_email CHECK (email ~* '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'),
     CONSTRAINT valid_phone CHECK (phone ~ '^[0-9]{10}$') -- 10 digit phone
 );
