@@ -83,6 +83,7 @@ CREATE TABLE review(
 CREATE TABLE post(
 	post_id SERIAL PRIMARY KEY,
 	content TEXT NOT NULL,
+	title TEXT NOT NULL,
 	post_created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	image_url VARCHAR(2048),
 	author_id INT NOT NULL REFERENCES user_account(user_account_id)
