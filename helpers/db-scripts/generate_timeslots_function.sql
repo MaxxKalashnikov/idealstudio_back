@@ -16,6 +16,16 @@ BEGIN
 	SELECT GetLastTimeslotDate(employee_id_param) INTO last_timeslot_date;
 	IF last_timeslot_date IS NOT NULL AND (start_date_param < CURRENT_DATE OR start_date_param <= last_timeslot_date) THEN
     		RAISE EXCEPTION 'start_date_param must be greater than %', last_timeslot_date;
+	END IF; 
+	
+	-- check start and end dates
+	IF start_date_param > end_date_param THEN 
+		RAISE EXCEPTION 'start_date_param must be less than end_date_param';
+	END IF;
+	
+	-- check start and end dates
+	IF start_time_param >= end_time_param THEN 
+		RAISE EXCEPTION 'start_time_param must be less than end_time_param';
 	END IF;
 
 	-- loop through every day
@@ -25,10 +35,11 @@ BEGIN
 			current_slot := start_time_param;
 			-- loop throgh evey slot
 			WHILE current_slot < end_time_param LOOP
-				INSERT INTO timeslot (start_time, end_time, employee_id)
-				VALUES (current_day + current_slot, 
-				    current_day + (current_slot + INTERVAL '1 minute' * duration_minutes_param),
-					employee_id_param);
+				INSERT INTO timeslot (timeslot_date, start_time, end_time, employee_id)
+				VALUES (current_day, 
+						current_slot, 
+						(current_slot + INTERVAL '1 minute' * duration_minutes_param), 
+						employee_id_param);
 				-- increment the current_time
 				current_slot := current_slot + INTERVAL '1 minute' * duration_minutes_param;
 			END LOOP;

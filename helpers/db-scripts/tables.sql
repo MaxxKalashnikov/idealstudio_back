@@ -47,17 +47,18 @@ CREATE TABLE service(
 -- timeslot
 CREATE TABLE timeslot (
     timeslot_id SERIAL PRIMARY KEY,
-    start_time TIMESTAMP NOT NULL,
-    end_time TIMESTAMP NOT NULL,
+	timeslot_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
 	is_available BOOLEAN NOT NULL DEFAULT true,
-    employee_id INT NOT NULL REFERENCES employee(employee_id)
-	CONSTRAINT unique_timeslot UNIQUE (start_time, end_time, employee_id),
+    employee_id INT NOT NULL REFERENCES employee(employee_id),
+	CONSTRAINT unique_timeslot UNIQUE (timeslot_date, start_time, end_time, employee_id),
 	CONSTRAINT start_before_end CHECK (start_time < end_time)
 );
 
 -- valid input
-INSERT INTO timeslot (start_time, end_time, is_available, employee_id) 
-VALUES ('2024-03-29 09:00:00', '2024-03-29 10:00:00', true, 1);
+--INSERT INTO timeslot (start_time, end_time, is_available, employee_id) 
+--VALUES ('2024-03-29 09:00:00', '2024-03-29 10:00:00', true, 1);
 
 
 -- appointment

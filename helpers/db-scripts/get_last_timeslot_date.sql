@@ -4,7 +4,7 @@ RETURNS DATE AS $$
 DECLARE
     last_date DATE;
 BEGIN
-    SELECT MAX(DATE(end_time)) INTO last_date
+    SELECT MAX(timeslot_date) INTO last_date
     FROM timeslot
     WHERE employee_id = employee_id_param;
 
