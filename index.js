@@ -14,11 +14,10 @@ app.use(express.urlencoded({extended: false}))
 
 
 
-// routers
-
-
-
-
+// You should add your routers here.
+// timeslots
+const { timeslotsRouter } = require('./routes/timeslotsController.js')
+app.use('/timeslots', timeslotsRouter)
 
 
 const port = process.env.PORT 
