@@ -37,8 +37,8 @@ CREATE TABLE customer(
 	customer_id SERIAL PRIMARY KEY,
 	firstname VARCHAR(255) NOT NULL,
 	lastname VARCHAR(255) NOT NULL,
-	email VARCHAR(255) NOT NULL,
-	phone VARCHAR(20),
+	email VARCHAR(255) NOT NULL UNIQUE,
+	phone VARCHAR(20) UNIQUE,
 	user_account_id INT UNIQUE REFERENCES user_account(user_account_id) ON DELETE SET NULL,
 	CONSTRAINT valid_email CHECK (email ~* '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'),
     CONSTRAINT valid_phone CHECK (phone ~ '^[0-9]{10}$') -- 10 digit phone
