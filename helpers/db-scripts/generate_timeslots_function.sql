@@ -13,7 +13,10 @@ DECLARE
 	last_timeslot_date DATE;
 BEGIN
 	-- check the last timeslot date 
-	SELECT GetLastTimeslotDate(employee_id_param) INTO last_timeslot_date;
+	SELECT MAX(timeslot_date) INTO last_timeslot_date
+    FROM timeslot
+    WHERE employee_id = employee_id_param;
+	
 	IF last_timeslot_date IS NOT NULL AND (start_date_param < CURRENT_DATE OR start_date_param <= last_timeslot_date) THEN
     		RAISE EXCEPTION 'start_date_param must be greater than %', last_timeslot_date;
 	END IF; 
