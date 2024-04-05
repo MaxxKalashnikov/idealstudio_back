@@ -1,6 +1,6 @@
 -- The function returns all available timeslots of 
 -- an employee for the specified month of the year.
-CREATE OR REPLACE FUNCTION GetAvailableTimeSlotsForMonth(
+CREATE OR REPLACE FUNCTION get_available_timeslots_for_month(
 	employee_id_param INT,
     month_param INT,
     year_param INT

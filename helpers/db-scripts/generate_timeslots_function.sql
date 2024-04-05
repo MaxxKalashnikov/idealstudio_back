@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION GenerateTimeSlots(
+CREATE OR REPLACE FUNCTION generate_timeSlots(
 	employee_id_param INT,
 	duration_minutes_param INT,
 	start_time_param TIME,

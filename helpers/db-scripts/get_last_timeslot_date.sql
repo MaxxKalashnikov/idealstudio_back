@@ -1,5 +1,5 @@
 -- get the date of the last timeslot of an employee
-CREATE OR REPLACE FUNCTION GetLastTimeslotDate(employee_id_param INT)
+CREATE OR REPLACE FUNCTION get_last_timeslot_date(employee_id_param INT)
 RETURNS DATE AS $$
 DECLARE
     last_date DATE;

@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION GetLastTimeslotDatePerEmployee()
+CREATE OR REPLACE FUNCTION get_last_timeslot_date_per_employee()
 RETURNS TABLE (
     timeslot_id INT,
     employee_id INT,
