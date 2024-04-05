@@ -7,6 +7,13 @@ CREATE TABLE user_account(
 	profile_picture_url VARCHAR(2048)
 );
 
+-- INSERT INTO user_account (user_type, username, password, profile_picture_url)
+-- VALUES ('employee', 'jane_smith', '$2b$10$k1r2s.Jk4KjauJMPJ6Pk5eeNLNyyl3kc0XvumhcxmpIC9ncX9YNs6', NULL); 
+
+-- INSERT INTO user_account (user_type, username, password, profile_picture_url)
+-- VALUES ('customer', 'helmi_paskajarvi', '$2b$10$k1r2s.Jk4KjauJMPJ6Pk5eeNLNyyl3kc0XvumhcxmpIC9ncX9YNs6', NULL); 
+--password is 0000 and tis one in the example is hashed
+
 -- employee: The employee needs to have a user_account first
 CREATE TABLE employee(
 	employee_id SERIAL PRIMARY KEY,
@@ -22,6 +29,9 @@ CREATE TABLE employee(
     CONSTRAINT valid_phone CHECK (phone ~ '^[0-9]{10}$')
 );
 
+-- INSERT INTO employee (firstname, lastname, email, phone, employee_type, specialization, is_active, user_account_id)
+-- VALUES ('Jane', 'Smith', 'jane@example.com', '1234567890', 'master', 'nail-master', true, 4);
+
 -- customer
 CREATE TABLE customer(
 	customer_id SERIAL PRIMARY KEY,
@@ -34,6 +44,10 @@ CREATE TABLE customer(
     CONSTRAINT valid_phone CHECK (phone ~ '^[0-9]{10}$') -- 10 digit phone
 );
 
+-- INSERT INTO customer (firstname, lastname, email, phone, user_account_id)
+-- VALUES ('Helmi', 'Pohjola', 'helmi@example.com', '1234567890', 5);
+
+
 -- service
 CREATE TABLE service(
 	service_id SERIAL PRIMARY KEY,
@@ -43,6 +57,9 @@ CREATE TABLE service(
 	price DECIMAL(5, 2) NOT NULL,
 	is_available BOOLEAN NOT NULL
 );
+
+--INSERT INTO service (service_name, category, description, price, is_available)
+--VALUES ('Haircut', 'Hair', 'Basic haircut service', 20.00, true);
 
 -- timeslot
 CREATE TABLE timeslot (
@@ -57,8 +74,8 @@ CREATE TABLE timeslot (
 );
 
 -- valid input
---INSERT INTO timeslot (start_time, end_time, is_available, employee_id) 
---VALUES ('2024-03-29 09:00:00', '2024-03-29 10:00:00', true, 1);
+-- INSERT INTO timeslot (start_time, end_time, is_available, employee_id) 
+-- VALUES ('2024-03-29 09:00:00', '2024-03-29 10:00:00', true, 1);
 
 
 -- appointment
@@ -71,6 +88,9 @@ CREATE TABLE appointment (
 	service_id INT NOT NULL REFERENCES service(service_id),
 	timeslot_id INT NOT NULL REFERENCES timeslot(timeslot_id)
 );
+
+-- INSERT INTO appointment (description, customer_id, service_id, timeslot_id)
+-- VALUES ('Appointment for haircut', 1, 1, 1);
 
 -- review 
 CREATE TABLE review(

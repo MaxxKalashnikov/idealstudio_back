@@ -2,7 +2,7 @@ const {sign, verify} = require('jsonwebtoken');
 const SECRET_JWT_KEY = 'tisosalmeniaebali228';
 const bcrypt = require('bcrypt');
 const pgp = require('pg-promise')();
-const { db } = require('../db');
+const { query } = require('../../helpers/db');
 const SALT_ROUNDS = 10;
 
 
@@ -37,7 +37,8 @@ const verifyToken = (req, res, next) =>{
 const registerUser = async (username, password) => {
     try {
         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-        await db.none('INSERT INTO users(username, password_hash) VALUES($1, $2)', [username, hashedPassword]);
+        //ONLY WORKS FOR EMPLOYEE REGISTRASION!!!!!!!!
+        await query('INSERT INTO user_account(user_type, username, password) VALUES($1, $2, $3)', ["employee", username, hashedPassword]);
         return true; 
     } catch (error) {
         console.error("Error registering user:", error);
@@ -47,9 +48,9 @@ const registerUser = async (username, password) => {
 
 const authenticateUser = async (username, password) => {
     try {
-        const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', username);
+        const user = await query("SELECT * FROM user_account WHERE username = $1", [username]);
         if (user) {
-            const passwordMatch = await bcrypt.compare(password, user.password_hash);
+            const passwordMatch = await bcrypt.compare(password, user.rows[0].password);//it took me 1 hour to fix this bug with rows[0]...
             if (passwordMatch) {
                 return user; // Authentication successful
             }

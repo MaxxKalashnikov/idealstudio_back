@@ -19,6 +19,18 @@ app.use(express.urlencoded({extended: false}))
 const { timeslotsRouter } = require('./routes/timeslotsController.js')
 app.use('/timeslots', timeslotsRouter)
 
+// appointments
+const { appointmentsRouter } = require('./routes/appointmentsController.js');
+app.use('/appointments', appointmentsRouter)
+
+// users
+const { usersRouter } = require('./routes/userController.js')
+app.use('/users', usersRouter)
+
+// home
+const { homeRouter } = require('./routes/homeController.js')
+app.use('/home', homeRouter)
+
 
 const port = process.env.PORT 
 app.listen(port)

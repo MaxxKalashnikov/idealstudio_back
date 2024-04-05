@@ -6,7 +6,7 @@ const dbConfig = {
     port: 5432,
     database: 'test1',
     user: 'postgres',
-    password: '1234'
+    password: 't12t34t56t78t90'
 };
 
 // Creating a new database instance
