@@ -1,0 +1,26 @@
+### Get timeslots
+GET http://localhost:3001/timeslots
+
+### Get last timeslots per employee
+GET http://localhost:3001/timeslots/last
+
+### Generate new timeslots
+POST http://localhost:3001/timeslots/new HTTP/1.1
+Content-Type: application/json
+
+{
+    "employee_id": 1,
+    "duration": "60",
+    "start_time": "10:00:00",
+    "end_time": "16:00:00",
+    "start_date": "2024-04-13",
+    "end_date": "2024-04-14"
+}
+
+### Update a timeslot
+PUT http://localhost:3001/timeslots/update/37 HTTP/1.1
+Content-Type: application/json
+
+{
+    "is_available": false
+}
