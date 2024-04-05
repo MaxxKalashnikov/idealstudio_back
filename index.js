@@ -27,6 +27,7 @@ app.use('/customers', customersRouter)
 const { employeesRouter } = require('./routes/employeesController.js')
 app.use('/employees', employeesRouter)
 
-
+const { blogsRouter } = require('./routes/blogsController.js')
+app.use('/blogs', blogsRouter)
 const port = process.env.PORT 
 app.listen(port)
