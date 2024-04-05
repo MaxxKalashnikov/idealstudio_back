@@ -19,7 +19,7 @@ timeslotsRouter.get('/', async (req, res) => {
 // get the last timesslot of each employee
 timeslotsRouter.get('/last', async (req, res) => {
     try {
-        const result = await query('select * from GetLastTimeslotDatePerEmployee()')
+        const result = await query('select * from get_last_timeslot_date_per_employee()')
         const rows = result.rows ? result.rows : []
         res.status(200).json(result.rows)
     } catch (error) {
@@ -40,7 +40,7 @@ timeslotsRouter.post('/new', async (req, res) => {
         const start_date = req.body.start_date
         const end_date = req.body.end_date
 
-        const result = await query('select GenerateTimeSlots($1, $2, $3, $4, $5, $6)',
+        const result = await query('select generate_timeslots($1, $2, $3, $4, $5, $6)',
         [employee_id, duration, start_time, end_time, start_date, end_date])
 
         const rows = result.rows ? result.rows : []
