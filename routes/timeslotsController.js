@@ -16,6 +16,20 @@ timeslotsRouter.get('/', async (req, res) => {
     }
 })
 
+// get the last timesslot of each employee
+timeslotsRouter.get('/last', async (req, res) => {
+    try {
+        const result = await query('select * from GetLastTimeslotDatePerEmployee()')
+        const rows = result.rows ? result.rows : []
+        res.status(200).json(result.rows)
+    } catch (error) {
+        console.log(error)
+        res.statusMessage = error
+        res.status(500).json({error: error})
+    }
+})
+
+
 // add new timeslots
 timeslotsRouter.post('/new', async (req, res) => {
     try {
@@ -39,7 +53,7 @@ timeslotsRouter.post('/new', async (req, res) => {
 })
 
 // update is_available field of a timeslot
-timeslotsRouter.put('/:timeslot_id', async (req, res) => {
+timeslotsRouter.put('/update/:timeslot_id', async (req, res) => {
     try {
         const result = await query('update timeslot set is_available=($1) where timeslot_id=($2)',
         [req.body.is_available, req.params.timeslot_id])
