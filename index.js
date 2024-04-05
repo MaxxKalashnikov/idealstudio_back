@@ -23,6 +23,10 @@ app.use('/timeslots', timeslotsRouter)
 const { customersRouter } = require('./routes/customersController.js')
 app.use('/customers', customersRouter)
 
+// employees
+const { employeesRouter } = require('./routes/employeesController.js')
+app.use('/employees', employeesRouter)
+
 
 const port = process.env.PORT 
 app.listen(port)
