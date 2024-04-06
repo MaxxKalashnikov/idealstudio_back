@@ -1,3 +1,4 @@
+--gets statistics fro home page
 CREATE OR REPLACE FUNCTION get_statistics()
 RETURNS TABLE (
     entity_name TEXT,

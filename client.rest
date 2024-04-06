@@ -102,3 +102,66 @@ Content-Type: application/json
 
 ### delete an employee
 DELETE  http://localhost:3001/employees/delete/19 HTTP/1.1
+
+
+### appointments
+
+# get all appointments
+GET http://localhost:3001/appointments/all
+
+# get appointments for specific person (username)
+GET http://localhost:3001/appointments/all/my/admin
+
+# get more appointment details for a selected appointment
+GET http://localhost:3001/appointments/all/my/admin
+
+### update an employee
+PUT http://localhost:3001//update/1 HTTP/1.1
+Content-Type: application/json
+
+{
+    "is_canceled": true
+}
+
+
+### home
+
+# get full name, email, phone and statistics for the home page
+GET http://localhost:3001/home/
+
+# update personal info on the home page
+PUT http://localhost:3001/employees/update/20 HTTP/1.1
+Content-Type: application/json
+
+{ 
+    "user_account_id" : 22,
+    "firstname" : "test_edit",
+    "lastname" : "test",
+    "email" : "test@ammc.com",
+    "phone" : "0384740400",
+    "employee_type" : "regular",
+    "specialization" : "Pedicure",
+    "is_active": false
+}
+
+
+
+### users
+
+# register new user (unique username)
+POST http://localhost:3001/users/register HTTP/1.1
+Content-Type: application/json
+
+{ 
+    "username": "user",
+    "password": "00000"
+}
+
+# login
+POST http://localhost:3001/users/login HTTP/1.1
+Content-Type: application/json
+
+{ 
+    "username": "user",
+    "password": "00000"
+}

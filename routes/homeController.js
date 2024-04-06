@@ -25,6 +25,7 @@ homeRouter.get('/:employee_id?', async (req, res) => {
     }
 })
 
+// updates personal info, also will work for other types of user
 homeRouter.put('/update/:id_worker?', async (req, res) => {
     try {
         const result = await query("SELECT update_employee($1, $2, $3, $4, $5)", [req.body.firstname,

@@ -1,5 +1,4 @@
 --function simply returns all appointments
---other details tba
 CREATE OR REPLACE FUNCTION get_appointment_details()
 RETURNS TABLE (
     appointment_id INT,

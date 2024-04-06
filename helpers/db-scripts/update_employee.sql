@@ -1,3 +1,4 @@
+--updates perosnal info at the home page
 CREATE OR REPLACE FUNCTION update_employee_info(
     new_firstname VARCHAR,
     new_lastname VARCHAR,

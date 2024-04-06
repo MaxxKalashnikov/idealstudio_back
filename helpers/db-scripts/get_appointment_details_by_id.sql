@@ -1,3 +1,4 @@
+--views more details for chosen appointment
 CREATE OR REPLACE FUNCTION get_appointment_details_by_id(input_appointment_id INT)
 RETURNS TABLE (
     appointment_id INT,
