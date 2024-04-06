@@ -1,12 +1,13 @@
+require('dotenv').config();
 const pgp = require('pg-promise')();
 
 // Database connection parameters
 const dbConfig = {
     host: 'localhost',
     port: 5432,
-    database: 'test1',
+    database: 'peteshko',
     user: 'postgres',
-    password: 't12t34t56t78t90'
+    password: '1234'
 };
 
 // Creating a new database instance
