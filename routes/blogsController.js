@@ -5,7 +5,7 @@ const blogsRouter = express.Router()
 // get all posts
 blogsRouter.get('/posts', async (req, res) => {
     try {
-        const result = await query('select * from post')
+        const result = await query('SELECT p.post_id, p.content, p.title, p.post_created_time, p.image_url, u.username AS author FROM post p INNER JOIN user_account u ON p.author_id=u.user_account_id')
         // in case the result may have no rows
         const rows = result.rows ? result.rows : []
         res.status(200).json(rows)
@@ -106,7 +106,7 @@ blogsRouter.get('/replies', async (req, res) => {
 // get replies of a post
 blogsRouter.get('/replies/:post_id', async (req, res) => {
     try {
-        const result = await query('select * from reply where post_id=($1)', 
+        const result = await query('SELECT r.reply_id, r.post_id, r.content, r.reply_created_time, u.username AS author FROM reply r INNER JOIN user_account u ON r.author_id=u.user_account_id WHERE r.post_id=($1)', 
         [req.params.post_id])
         // in case the result may have no rows
         const rows = result.rows ? result.rows : []
@@ -118,18 +118,16 @@ blogsRouter.get('/replies/:post_id', async (req, res) => {
     }
 })
 
-// add new post
+// add new reply
 blogsRouter.post('/replies/new', async (req, res) => {
     try {
         const post_id = req.body.post_id
-        const author_id = author_id
+        const author_id = req.body.author_id
         const content = req.body.content
         
-        const result = await query('insert into reply(post_id, author_id, content, values ($1, $2, $3) returning *',
+        const result = await query('insert into reply(post_id, author_id, content) values ($1, $2, $3)',
         [post_id, author_id, content])
-
-        const rows = result.rows ? result.rows : []
-        res.status(200).json(rows)
+        res.status(200).json({post_id: post_id})
     } catch (error) {
         console.log(error)
         res.statusMessage = error
