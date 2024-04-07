@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const {createToken, verifyToken, registerUser, getUsers, authenticateUser} = require('./authentification/auth')
@@ -9,16 +10,20 @@ app.use(bodyParser.json());
 const PORT = 3001;
 
 
+
+
+
 app.get('/', (req, res) => {
     res.send('Hello world!')
 })
 
 //This is for testing access right
-app.get('/users', getUsers, (req, res) => {
+app.get('/users', verifyToken, getUsers, (req, res) => {
     // Access the users data attached to the request object
     const users = req.users;
     res.json(users);
 });
+
 
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
@@ -39,8 +44,9 @@ app.post('/login', async (req, res) => {
     try {
         const user = await authenticateUser(username, password);
         if (user) {
-            console.log('User defined')
-            const accessToken = createToken(username);
+            console.log()
+            //console.log('User defined: ', user)
+            const accessToken = createToken(username, user.rows[0].role); // Pass the user's role here
             res.cookie('access_token', accessToken, { httpOnly: true });
             res.status(200).json({ message: 'Login successful', token: accessToken });
         } else {
@@ -51,7 +57,6 @@ app.post('/login', async (req, res) => {
         res.status(500).json({ message: 'Login failed' });
     }
 });
-
 app.get('/login', (req, res)=>{
     res.sendFile(__dirname + "/public/login.html")
 })
