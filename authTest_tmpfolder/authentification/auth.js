@@ -6,12 +6,6 @@ const pgp = require('pg-promise')();
 const { query } = require('../../helpers/db');
 const SALT_ROUNDS = 10;
 
-
-
-
-
-
-
 const createToken = (userName, role) => {
     console.log("ROLEEE::::   ",role);
     const accessToken = sign({ userName: userName, role: role }, SECRET_JWT_KEY, {

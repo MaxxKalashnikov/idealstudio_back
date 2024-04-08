@@ -43,5 +43,16 @@ app.use('/employees', employeesRouter)
 const { blogsRouter } = require('./routes/blogsController.js')
 app.use('/blogs', blogsRouter)
 
+
+// masters 
+const { mastersRouter } = require('./routes/mastersController.js')
+app.use('/masters', mastersRouter)
+
+
+// services
+const { servicesRouter } = require('./routes/servicesController.js')
+app.use('/services', servicesRouter)
 const port = process.env.PORT 
+
+
 app.listen(port)
