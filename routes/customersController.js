@@ -5,7 +5,7 @@ const customersRouter = express.Router()
 // get all customers
 customersRouter.get('/', async (req, res) => {
     try {
-        const result = await query('select * from customer')
+        const result = await query('select * from customers')
         // in case the result may have no rows
         const rows = result.rows ? result.rows : []
         res.status(200).json(rows)
@@ -19,7 +19,7 @@ customersRouter.get('/', async (req, res) => {
 // get customer by id
 customersRouter.get('/:customer_id', async (req, res) => {
     try {
-        const result = await query('select * from customer where customer_id=($1)', 
+        const result = await query('select * from customers where customer_id=($1)', 
         [req.params.customer_id])
         // in case the result may have no rows
         const rows = result.rows ? result.rows : []
@@ -34,7 +34,7 @@ customersRouter.get('/:customer_id', async (req, res) => {
 // delete a customer
 customersRouter.delete('/delete/:customer_id', async (req, res) => {
     try {
-        const result = await query('delete from customer where customer_id=($1)', 
+        const result = await query('delete from customers where customer_id=($1)', 
         [req.params.customer_id])
         // in case the result may have no rows
         const rows = result.rows ? result.rows : []
