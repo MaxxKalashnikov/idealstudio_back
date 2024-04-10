@@ -16,6 +16,19 @@ employeesRouter.get('/', async (req, res) => {
     }
 })
 
+employeesRouter.get('/more', async (req, res) => {
+    try {
+        const result = await query('SELECT employee.*, user_account.profile_picture_url FROM employee JOIN user_account ON employee.user_account_id = user_account.user_account_id;')
+        // in case the result may have no rows
+        const rows = result.rows ? result.rows : []
+        res.status(200).json(rows)
+    } catch (error) {
+        console.log(error)
+        res.statusMessage = error
+        res.status(500).json({error: error})
+    }
+})
+
 // get employee by id
 employeesRouter.get('/:employee_id', async (req, res) => {
     try {

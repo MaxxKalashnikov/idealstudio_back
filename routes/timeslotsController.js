@@ -16,6 +16,20 @@ timeslotsRouter.get('/', async (req, res) => {
     }
 })
 
+timeslotsRouter.get('/:employee_id', async (req, res) => {
+    try {
+        const employeeId = req.params.employee_id;
+        const result = await query('SELECT * FROM timeslot WHERE employee_id = $1', [employeeId])
+        // in case the result may have no rows
+        const rows = result.rows ? result.rows : []
+        res.status(200).json(rows)
+    } catch (error) {
+        console.log(error)
+        res.statusMessage = error
+        res.status(500).json({error: error})
+    }
+})
+
 // get the last timesslot of each employee
 timeslotsRouter.get('/last', async (req, res) => {
     try {

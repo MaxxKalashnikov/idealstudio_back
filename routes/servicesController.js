@@ -5,7 +5,7 @@ const servicesRouter = express.Router();
 // Services get
 servicesRouter.get('/', async (req, res) => {
     try {
-        const result = await query('SELECT * FROM services');
+        const result = await query('SELECT * FROM service');
         const rows = result.rows ? result.rows : [];
         res.status(200).json(rows);
     } catch (error) {
@@ -18,7 +18,7 @@ servicesRouter.get('/', async (req, res) => {
 // Obtaining information about a specific service by its identifier
 servicesRouter.get('/:service_id', async (req, res) => {
     try {
-        const result = await query('SELECT * FROM services WHERE service_id = $1', [req.params.service_id]);
+        const result = await query('SELECT * FROM service WHERE service_id = $1', [req.params.service_id]);
         const rows = result.rows ? result.rows : [];
         res.status(200).json(rows);
     } catch (error) {
@@ -35,7 +35,7 @@ servicesRouter.post('/new', async (req, res) => {
         const { service_name, service_description, service_price } = req.body;
 
         // Running a database query to insert a new service
-        const result = await query('INSERT INTO services (service_name, service_description, service_price) VALUES ($1, $2, $3) RETURNING *', 
+        const result = await query('INSERT INTO service (service_name, service_description, service_price) VALUES ($1, $2, $3) RETURNING *', 
                                     [service_name, service_description, service_price]);
 
         const rows = result.rows ? result.rows : [];
@@ -55,7 +55,7 @@ servicesRouter.put('/update/:service_id', async (req, res) => {
         const { serviceName, serviceDescription, servicePrice } = req.body;
 
         // Running a database query to update service information
-        const result = await query('UPDATE services SET service_name = $1, service_description = $2, service_price = $3 WHERE service_id = $4 RETURNING *', 
+        const result = await query('UPDATE service SET service_name = $1, service_description = $2, service_price = $3 WHERE service_id = $4 RETURNING *', 
                                     [serviceName, serviceDescription, servicePrice, req.params.service_id]);
 
         const rows = result.rows ? result.rows : [];
@@ -72,7 +72,7 @@ servicesRouter.delete('/delete/:service_id', async (req, res) => {
     try {
         const serviceId = parseInt(req.params.service_id);
 
-        await query('DELETE FROM services WHERE service_id = $1', [serviceId]);
+        await query('DELETE FROM service WHERE service_id = $1', [serviceId]);
         res.status(200).json({ message: 'Service deleted successfully' });
     } catch (error) {
         console.log(error);

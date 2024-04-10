@@ -55,5 +55,25 @@ appointmentsRouter.put('/update/:appointment_id', async (req, res) => {
     }
 })
 
+appointmentsRouter.post('/new', async (req, res) => {
+    try {
+        const employee_id = req.body.employee_id
+        const duration = req.body.duration
+        const start_time = req.body.start_time
+        const end_time = req.body.end_time
+        const start_date = req.body.start_date
+        const end_date = req.body.end_date
+
+        const result = await query('select generate_timeslots($1, $2, $3, $4, $5, $6)',
+        [employee_id, duration, start_time, end_time, start_date, end_date])
+
+        const rows = result.rows ? result.rows : []
+        res.status(200).json(rows)
+    } catch (error) {
+        console.log(error)
+        res.statusMessage = error
+        res.status(500).json({error: error})
+   }
+})
 
 module.exports = { appointmentsRouter }
