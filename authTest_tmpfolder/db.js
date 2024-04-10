@@ -9,7 +9,7 @@ const dbConfig = {
     user: 'postgres',
     password: '1234'
 };
-
+1
 // Creating a new database instance
 const db = pgp(dbConfig);
 

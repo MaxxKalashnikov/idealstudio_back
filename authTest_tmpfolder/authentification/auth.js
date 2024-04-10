@@ -9,7 +9,7 @@ const SALT_ROUNDS = 10;
 const createToken = (userName, role) => {
     console.log("ROLEEE::::   ",role);
     const accessToken = sign({ userName: userName, role: role }, SECRET_JWT_KEY, {
-        expiresIn: 10,
+        expiresIn: '1h',
     });
     return accessToken;
 }
@@ -22,6 +22,7 @@ const verifyToken = (req, res, next) =>{
         return res.status(401).json({message: "Access token not found"})
     }
     try{
+        console.log("VERIFY::  ", access_token)
         const validToken = verify(access_token, SECRET_JWT_KEY);
         if(validToken){
             req.authenticated = true;
@@ -50,6 +51,23 @@ const registerUser = async (username, password) => {
         return false; 
     }
 };
+
+async function login(req, res) {
+    const { username, password } = req.body;
+    try {
+        const user = await authenticateUser(username, password);
+        if (user) {
+            const accessToken = createToken(username, user.rows[0].role); // Pass the user's role here
+            res.cookie('access_token', accessToken, { httpOnly: true });
+            res.status(200).json({ message: 'Login successful', token: accessToken });
+        } else {
+            res.status(401).json({ message: 'Invalid username or password' });
+        }
+    } catch (error) {
+        console.error('Error authenticating user:', error);
+        res.status(500).json({ message: 'Login failed' });
+    }
+}
 
 const authenticateUser = async (username, password) => {
     try {
@@ -91,4 +109,4 @@ const getUsers = async (req, res, next) => {
 
 
 
-module.exports = { createToken, verifyToken, registerUser, authenticateUser, getUsers };
+module.exports = { createToken, verifyToken, registerUser, authenticateUser, getUsers, login };

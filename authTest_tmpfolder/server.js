@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const {createToken, verifyToken, registerUser, getUsers, authenticateUser} = require('./authentification/auth')
+const {createToken, verifyToken, registerUser, getUsers, authenticateUser, login} = require('./authentification/auth')
 const app = express();
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
@@ -13,7 +13,7 @@ const PORT = 3001;
 
 
 
-app.get('/', (req, res) => {
+app.get('/', (req, res) => {customer_id
     res.send('Hello world!')
 })
 
@@ -39,24 +39,8 @@ app.post('/register', async (req, res) => {
 });
 
 
-app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-        const user = await authenticateUser(username, password);
-        if (user) {
-            console.log()
-            //console.log('User defined: ', user)
-            const accessToken = createToken(username, user.rows[0].role); // Pass the user's role here
-            res.cookie('access_token', accessToken, { httpOnly: true });
-            res.status(200).json({ message: 'Login successful', token: accessToken });
-        } else {
-            res.status(401).json({ message: 'Invalid username or password' });
-        }
-    } catch (error) {
-        console.error('Error authenticating user:', error);
-        res.status(500).json({ message: 'Login failed' });
-    }
-});
+app.post('/login', login);
+
 app.get('/login', (req, res)=>{
     res.sendFile(__dirname + "/public/login.html")
 })
