@@ -4,7 +4,6 @@ const SECRET_JWT_KEY = 'tisosalmeniaebali228';
 const bcrypt = require('bcrypt');
 const pgp = require('pg-promise')();
 const { query } = require('../../helpers/db');
-const SALT_ROUNDS = 10;
 
 const createToken = (userName, role) => {
     console.log("ROLEEE::::   ",role);
@@ -40,11 +39,22 @@ const verifyToken = (req, res, next) =>{
 }
 
 
-const registerUser = async (username, password) => {
+// const registerUser = async (username, password, user_type) => {
+//     try {
+//         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+//         //ONLY WORKS FOR EMPLOYEE REGISTRASION!!!!!!!!
+//         await query('INSERT INTO user_account(user_type, username, password) VALUES($1, $2, $3)', [user_type, username, hashedPassword]);
+//         return true; 
+//     } catch (error) {
+//         console.error("Error registering user:", error);
+//         return false; 
+//     }
+// };
+
+const registerUser = async (username, password, user_type) => {
     try {
-        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-        //ONLY WORKS FOR EMPLOYEE REGISTRASION!!!!!!!!
-        await query('INSERT INTO users(role, username, hashed_password) VALUES($1, $2, $3)', ["employee", username, hashedPassword]);
+        const hashedPassword = await bcrypt.hash(password, process.env.SALT_ROUNDS);
+        await query('INSERT INTO user_account(user_type, username, password) VALUES($1, $2, $3)', [user_type, username, hashedPassword]);
         return true; 
     } catch (error) {
         console.error("Error registering user:", error);

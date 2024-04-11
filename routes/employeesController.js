@@ -1,8 +1,9 @@
 const express = require('express')
 const { query } = require('../helpers/db.js')
 const employeesRouter = express.Router()
+const bcrypt = require('bcrypt');
 
-// get all employees
+// get all employeesSALT_ROUNDS
 employeesRouter.get('/', async (req, res) => {
     try {
         const result = await query('select * from employee')
@@ -11,7 +12,7 @@ employeesRouter.get('/', async (req, res) => {
         res.status(200).json(rows)
     } catch (error) {
         console.log(error)
-        res.statusMessage = error
+        res.statusMessage = erroSALT_ROUNDSr
         res.status(500).json({error: error})
     }
 })
@@ -44,28 +45,44 @@ employeesRouter.get('/:employee_id', async (req, res) => {
     }
 })
 
-// add new employee
+//register new employee
 employeesRouter.post('/new', async (req, res) => {
     try {
-        const user_account_id = req.body.user_account_id
-        const firstname = req.body.firstname
-        const lastname = req.body.lastname
-        const email = req.body.email
-        const phone = req.body.phone
-        const employee_type = req.body.employee_type
-        const specialization = req.body.specialization
-        
-        const result = await query('insert into employee(user_account_id, firstname, lastname, email, phone, employee_type, specialization) values ($1, $2, $3, $4, $5, $6, $7) returning *',
-        [user_account_id, firstname, lastname, email, phone,employee_type, specialization])
+        const username = req.body.username; 
+        const password = req.body.password; 
+        const user_type = 'employee'; // Assuming the user being registered is always an employee
+        const firstname = req.body.firstname;
+        const lastname = req.body.lastname;
+        const email = req.body.email;
+        const phone = req.body.phone;
+        const employee_type = req.body.employee_type;
+        const specialization = req.body.specialization;
 
-        const rows = result.rows ? result.rows : []
-        res.status(200).json(rows)
+        // Start a transaction
+        await query('BEGIN');
+
+        // Register the user (employee) in the user_account table
+        const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS));
+        const userAccountResult = await query('INSERT INTO user_account(user_type, username, password) VALUES($1, $2, $3) RETURNING user_account_id', [user_type, username, hashedPassword]);
+        const user_account_id = userAccountResult.rows[0].user_account_id;
+
+        // Register the employee in the employee table
+        const employeeResult = await query('INSERT INTO employee(user_account_id, firstname, lastname, email, phone, employee_type, specialization) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [user_account_id, firstname, lastname, email, phone, employee_type, specialization]);
+
+        // Commit the transaction
+        await query('COMMIT');
+
+        // Send response with the newly created employee data
+        const employee = employeeResult.rows[0];
+        res.status(200).json(employee);
     } catch (error) {
-        console.log(error)
-        res.statusMessage = error
-        res.status(500).json({error: error})
-   }
-})
+        // Rollback the transaction if an error occurs
+        await query('ROLLBACK');
+        console.error("Error registering employee:", error);
+        res.status(500).json({ error: "Error registering employee." });
+    }
+});
+
 
 
 // update an employee
