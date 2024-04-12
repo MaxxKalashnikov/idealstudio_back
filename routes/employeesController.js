@@ -2,6 +2,17 @@ const express = require('express')
 const { query } = require('../helpers/db.js')
 const employeesRouter = express.Router()
 const bcrypt = require('bcrypt');
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+});
+
+
 
 // get all employeesSALT_ROUNDS
 employeesRouter.get('/', async (req, res) => {
@@ -40,13 +51,13 @@ employeesRouter.get('/:employee_id', async (req, res) => {
         res.status(200).json(rows)
     } catch (error) {
         console.log(error)
-        res.statusMessage = error
+        res.statusMessage = error.message
         res.status(500).json({error: error})
     }
 })
 
-//register new employee
 employeesRouter.post('/new', async (req, res) => {
+    let client;
     try {
         const username = req.body.username; 
         const password = req.body.password; 
@@ -54,35 +65,38 @@ employeesRouter.post('/new', async (req, res) => {
         const firstname = req.body.firstname;
         const lastname = req.body.lastname;
         const email = req.body.email;
-        const phone = req.body.phone;
+        const phone = req.body.phone; // Phone number stored as string
         const employee_type = req.body.employee_type;
         const specialization = req.body.specialization;
 
         // Start a transaction
-        await query('BEGIN');
+        client = await pool.connect();
+        await client.query('BEGIN');
 
         // Register the user (employee) in the user_account table
         const hashedPassword = await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS));
-        const userAccountResult = await query('INSERT INTO user_account(user_type, username, password) VALUES($1, $2, $3) RETURNING user_account_id', [user_type, username, hashedPassword]);
+        const userAccountResult = await client.query('INSERT INTO user_account(user_type, username, password) VALUES($1, $2, $3) RETURNING user_account_id', [user_type, username, hashedPassword]);
         const user_account_id = userAccountResult.rows[0].user_account_id;
 
         // Register the employee in the employee table
-        const employeeResult = await query('INSERT INTO employee(user_account_id, firstname, lastname, email, phone, employee_type, specialization) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [user_account_id, firstname, lastname, email, phone, employee_type, specialization]);
+        const employeeResult = await client.query('INSERT INTO employee(user_account_id, firstname, lastname, email, phone, employee_type, specialization) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [user_account_id, firstname, lastname, email, phone, employee_type, specialization]);
 
         // Commit the transaction
-        await query('COMMIT');
+        await client.query('COMMIT');
 
         // Send response with the newly created employee data
         const employee = employeeResult.rows[0];
         res.status(200).json(employee);
     } catch (error) {
         // Rollback the transaction if an error occurs
-        await query('ROLLBACK');
+        if (client) {
+            await client.query('ROLLBACK');
+            client.release();
+        }
         console.error("Error registering employee:", error);
         res.status(500).json({ error: "Error registering employee." });
     }
 });
-
 
 
 // update an employee
@@ -105,7 +119,7 @@ employeesRouter.put('/update/:employee_id', async (req, res) => {
         res.status(200).json(rows)
     } catch (error) {
         console.log(error)
-        res.statusMessage = error
+        res.statusMessage = error.message
         res.status(500).json({error: error})
     }
 })
@@ -120,7 +134,7 @@ employeesRouter.delete('/delete/:employee_id', async (req, res) => {
         res.status(200).json({employee_id: req.params.employee_id})
     } catch (error) {
         console.log(error)
-        res.statusMessage = error
+        res.statusMessage = error.message
         res.status(500).json({error: error})
     }
 })
