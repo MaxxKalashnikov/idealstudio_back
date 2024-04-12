@@ -14,7 +14,7 @@ usersRouter.post('/register', async (req, res) => {
     if (!username || !password) {
         return res.status(400).json({ message: "Username and password are required" });
     }
-    const success = await registerUser(username, password);
+    const success = await registerUser(username, password, "customer");
     if (success) {
         res.status(201).json({ message: "User registered successfully" });
     } else {

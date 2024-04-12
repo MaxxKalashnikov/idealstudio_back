@@ -10,9 +10,6 @@ app.use(bodyParser.json());
 const PORT = 3001;
 
 
-
-
-
 app.get('/', (req, res) => {customer_id
     res.send('Hello world!')
 })
@@ -26,18 +23,17 @@ app.get('/users', verifyToken, getUsers, (req, res) => {
 
 
 app.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, user_type } = req.body;
     if (!username || !password) {
         return res.status(400).json({ message: "Username and password are required" });
     }
-    const success = await registerUser(username, password);
+    const success = await registerUser(username, password, user_type);
     if (success) {
         res.status(201).json({ message: "User registered successfully" });
     } else {
         res.status(500).json({ message: "Failed to register user" });
     }
 });
-
 
 app.post('/login', login);
 
