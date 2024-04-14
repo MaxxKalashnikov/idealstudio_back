@@ -37,7 +37,7 @@ const verifyToken = (req, res, next) =>{
         return res.status(403).json({message: "Invalid access token"})
     }
 }
-
+const saltRounds = 10;
 
 // const registerUser = async (username, password, user_type) => {
 //     try {
@@ -53,7 +53,7 @@ const verifyToken = (req, res, next) =>{
 
 const registerUser = async (username, password, user_type) => {
     try {
-        const hashedPassword = await bcrypt.hash(password, process.env.SALT_ROUNDS);
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
         await query('INSERT INTO user_account(user_type, username, password) VALUES($1, $2, $3)', [user_type, username, hashedPassword]);
         return true; 
     } catch (error) {
