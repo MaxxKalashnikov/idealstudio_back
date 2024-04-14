@@ -44,6 +44,7 @@ customersRouter.post('/new', async (req, res) => {
         [user_account_id, firstname, lastname, email, phone])
 
         const rows = result.rows ? result.rows : []
+        console.log(rows)
         res.status(200).json(rows)
     } catch (error) {
         console.log(error)
