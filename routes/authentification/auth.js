@@ -94,9 +94,10 @@ const authenticateUser = async (username, password) => {
         let employeeUserType = ''
         if(user.rows[0].user_type == "employee"){
             employeeUserType = await query("SELECT e.employee_type FROM employee e LEFT JOIN user_account u ON e.user_account_id = u.user_account_id WHERE u.username = $1", [username])
-            user.rows[0].user_type = employeeUserType.employee_type
+            console.log(employeeUserType.rows[0].employee_type)
+            user.rows[0].user_type = employeeUserType.rows[0].employee_type
         }
-        console.log(user)
+        // console.log(user)
         if (user) {
             const passwordMatch = await bcrypt.compare(password, user.rows[0].password);//it took me 1 hour to fix this bug with rows[0]...
             if (passwordMatch) {
@@ -119,7 +120,7 @@ const getUsers = async (req, res, next) => {
         console.log("req.user.ROLE:::",req.user.role);
         if (req.authenticated && req.user && req.user.role === 'admin') {
             console.log("TRYING TO READ DB")
-            const users = await query('SELECT * FROM users');
+            const users = await query('SELECT * FROM user_account');
             req.users = users; // Attach users data to the request object
             next(); // Proceed to the next middleware or route handler
         } else {

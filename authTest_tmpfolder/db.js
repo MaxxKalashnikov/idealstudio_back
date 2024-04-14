@@ -5,9 +5,9 @@ const pgp = require('pg-promise')();
 const dbConfig = {
     host: 'localhost',
     port: 5432,
-    database: 'peteshko',
+    database: 'booking',
     user: 'postgres',
-    password: '1234'
+    password: 't12t34t56t78t90'
 };
 1
 // Creating a new database instance
