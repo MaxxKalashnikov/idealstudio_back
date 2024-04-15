@@ -1,20 +1,45 @@
+require('dotenv').config();
+const path = require('path');
+const { query } = require('../helpers/db.js')
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
-const {createToken, verifyToken, registerUser, getUsers, authenticateUser} = require('../authTest_tmpfolder/authentification/auth')
-const app = express();
+const {createToken, verifyToken, registerUser, getUsers, authenticateUser, login, getCust}= require('./authentification/auth.js')
 const cookieParser = require('cookie-parser');
 const usersRouter = express.Router()
 usersRouter.use(cookieParser());
 usersRouter.use(bodyParser.urlencoded({ extended: true }));
 usersRouter.use(bodyParser.json());
+usersRouter.use(cors())
+
+usersRouter.use(cors({
+    origin: 'http://127.0.0.1:5501',
+    credentials: true
+  }));
+
+//for testing
+usersRouter.get('/test' , async (req, res)=>{
+    try {
+        console.log(process.env.DB_PASSWORD)
+        const result = await query('SELECT * FROM user_account');
+        const rows = result.rows ? result.rows : [];
+        res.status(200).json(rows);
+    } catch (error) {
+        console.log(error);
+        res.statusMessage = error;
+        res.status(500).json({ error: error });
+    }
+})
 
 // register new user
-usersRouter.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+usersRouter.post('/signup', async (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    const user_type = "customer";
     if (!username || !password) {
         return res.status(400).json({ message: "Username and password are required" });
     }
-    const success = await registerUser(username, password, "customer");
+    const success = await registerUser(username, password, user_type);
     if (success) {
         res.status(201).json({ message: "User registered successfully" });
     } else {
@@ -22,69 +47,22 @@ usersRouter.post('/register', async (req, res) => {
     }
 });
 
+
 // authentication
-usersRouter.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-        const user = await authenticateUser(username, password);
-        if (user) {
-            console.log('User defined')
-            const accessToken = createToken(username);
-            res.cookie('access_token', accessToken, { httpOnly: true });
-            res.status(200).json({ message: 'Login successful', token: accessToken });
-        } else {
-            res.status(401).json({ message: 'Invalid username or password' });
-        }
-    } catch (error) {
-        console.error('Error authenticating user:', error);
-        res.status(500).json({ message: 'Login failed' });
-    }
+usersRouter.post('/login', login);  
+
+usersRouter.get('/profile', verifyToken, async (req, res) => {
+    // Здесь можно продолжить выполнение кода для обработки запроса, если токен прошел верификацию
+    return res.status(200).json({ message: "Hello profile!" });
 });
 
+// usersRouter.get('/profile',verifyToken, getUsers, async (req, res) => {
+//     res.status(201).json({ message: "ОК" });
+//     // const filePath = path.resolve(__dirname, pathToProfile);
+//     // // Отправка файла в качестве ответа
+//     // res.sendFile(filePath);
+// });
 
 
-// add new customer
-// customersRouter.post('/new', async (req, res) => {
-//     try {
-//         const user_account_id = req.body.user_account_id
-//         const firstname = req.body.firstname
-//         const lastname = req.body.lastname
-//         const email = req.body.email
-//         const phone = req.body.phone
-        
-//         const result = await query('insert into customer(user_account_id, firstname, lastname, email, phone) values ($1, $2, $3, $4, $5) returning *',
-//         [user_account_id, firstname, lastname, email, phone])
-
-//         const rows = result.rows ? result.rows : []
-//         res.status(200).json(rows)
-//     } catch (error) {
-//         console.log(error)
-//         res.statusMessage = error
-//         res.status(500).json({error: error})
-//    }
-// })
-
-
-
-// customersRouter.put('/update/:user_id', async (req, res) => {
-//     try {
-//         const customer_id = req.params.customer_id
-//         const user_account_id = req.body.user_account_id
-//         const firstname = req.body.firstname
-//         const lastname = req.body.lastname
-//         const email = req.body.email
-//         const phone = req.body.phone
-
-//         const result = await query('update user set user_account_id=($1), firstname=($2), lastname=($3), email=($4), phone=($5) where customer_id=($6) returning *',
-//         [user_account_id, firstname, lastname, email, phone, customer_id])
-
-//         const rows = result.rows ? result.rows : []
-//         res.status(200).json(rows)
-//     } catch (error) {
-//         console.log(error)
-//         res.statusMessage = error
-//         res.status(500).json({error: error})
-//     }
-// })
 
 module.exports = { usersRouter }

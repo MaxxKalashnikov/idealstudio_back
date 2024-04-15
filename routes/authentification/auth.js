@@ -13,9 +13,10 @@ const createToken = (userName, role) => {
     return accessToken;
 }
 
-const verifyToken = (req, res, next) =>{
+const verifyToken = async (req, res, next) =>{
+    console.log(req.cookies)
     const access_token = req.cookies.access_token;
-    console.log("verification:::", req.cookies.access_token);
+    console.log("verification:::",req.cookies.access_token);
     if(!access_token){
         return res.status(401).json({message: "Access token not found"})
     }
@@ -29,14 +30,14 @@ const verifyToken = (req, res, next) =>{
             return next();
         }
         else{
-            console.log("not valid token")
+            console.log("FUUUUCK")
         }
     }
     catch(e){
         return res.status(403).json({message: "Invalid access token"})
     }
 }
-const saltRounds = 10;
+
 
 // const registerUser = async (username, password, user_type) => {
 //     try {
@@ -68,12 +69,7 @@ async function login(req, res) {
         const user = await authenticateUser(username, password);
         let accessToken = ''
         if (user) {
-            if(user.rows[0].user_type == 'admin'){
-                accessToken = createToken(username, user.rows[0].user_type);
-            }
-            else{
-                accessToken = createToken(username, user.rows[0].user_type);
-            }
+            accessToken = createToken(username, user.rows[0].user_type);
              // Pass the user's role here
             res.cookie('access_token', accessToken, { httpOnly: true });
             res.status(200).json({ message: 'Login successful', token: accessToken });
@@ -93,9 +89,10 @@ const authenticateUser = async (username, password) => {
         let employeeUserType = ''
         if(user.rows[0].user_type == "employee"){
             employeeUserType = await query("SELECT e.employee_type FROM employee e LEFT JOIN user_account u ON e.user_account_id = u.user_account_id WHERE u.username = $1", [username])
-            user.rows[0].user_type = employeeUserType.employee_type
+            console.log(employeeUserType.rows[0].employee_type)
+            user.rows[0].user_type = employeeUserType.rows[0].employee_type
         }
-        console.log(user)
+        // console.log(user)
         if (user) {
             const passwordMatch = await bcrypt.compare(password, user.rows[0].password);//it took me 1 hour to fix this bug with rows[0]...
             if (passwordMatch) {
@@ -110,7 +107,7 @@ const authenticateUser = async (username, password) => {
 };
 
 // this func is for testing access rights and checks that db rw is working 
-const getUsers = async (req, res, next) => {
+const getUsers = (req, res, next) => {
     try {
         // Check if user is authenticated and has a role
         console.log("req.authenticated:::::", req.authenticated);
@@ -118,16 +115,16 @@ const getUsers = async (req, res, next) => {
         console.log("req.user.ROLE:::",req.user.role);
         if (req.authenticated && req.user && req.user.role === 'admin') {
             console.log("TRYING TO READ DB")
-            const users = await query('SELECT * FROM users');
-            req.users = users; // Attach users data to the request object
+            // const users = await query('SELECT * FROM user_account');
+            // req.users = users; // Attach users data to the request object
             next(); // Proceed to the next middleware or route handler
         } else {
             // If user is not authenticated or doesn't have admin role, send forbidden error
-            res.status(403).json({ message: 'Access forbidden: Only admin can access this resource' });
+            return res.status(403).json({ message: 'Access forbidden: Only admin can access this resource' });
         }
     } catch (error) {
         console.error('Error fetching users:', error);
-        res.status(500).json({ message: 'Failed to fetch users' });
+        return res.status(500).json({ message: 'Failed to fetch users' });
     }
 };
 
