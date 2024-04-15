@@ -34,7 +34,8 @@ employeesRouter.get('/:employee_id', async (req, res) => {
 // add new employee
 employeesRouter.post('/new', async (req, res) => {
     try {
-        const user_account_id = req.body.user_account_id
+        const username = req.body.username
+        const password = req.body.password
         const firstname = req.body.firstname
         const lastname = req.body.lastname
         const email = req.body.email
@@ -42,11 +43,13 @@ employeesRouter.post('/new', async (req, res) => {
         const employee_type = req.body.employee_type
         const specialization = req.body.specialization
         
-        const result = await query('insert into employee(user_account_id, firstname, lastname, email, phone, employee_type, specialization) values ($1, $2, $3, $4, $5, $6, $7) returning *',
-        [user_account_id, firstname, lastname, email, phone,employee_type, specialization])
+       
+
+        const result = await query('SELECT create_user_and_employee($1, $2, $3, $4, $5, $6, $7, $8);',
+        [username, password, firstname, lastname, email, phone, employee_type, specialization])
 
         const rows = result.rows ? result.rows : []
-        res.status(200).json(rows)
+        res.status(200).json(rows[0])
     } catch (error) {
         console.log(error)
         res.statusMessage = error
