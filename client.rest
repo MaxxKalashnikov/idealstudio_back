@@ -46,6 +46,19 @@ Content-Type: application/json
     "phone" : "0384740474"
 }
 
+### add a new customer account
+POST http://localhost:3001/customers/account/new HTTP/1.1
+Content-Type: application/json
+
+{ 
+    "username" : "john",
+    "password": "00000",
+    "firstname" : "John",
+    "lastname" : "Johnie",
+    "email" : "john@adbc.com",
+    "phone" : "0384700474"
+}
+
 ### update a customer
 PUT http://localhost:3001/customers/update/31 HTTP/1.1
 Content-Type: application/json

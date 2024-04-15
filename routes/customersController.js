@@ -53,6 +53,31 @@ customersRouter.post('/new', async (req, res) => {
    }
 })
 
+// add new customer account
+customersRouter.post('/account/new', async (req, res) => {
+    try {
+        const username = req.body.username
+        const password = req.body.password
+        const firstname = req.body.firstname
+        const lastname = req.body.lastname
+        const email = req.body.email
+        const phone = req.body.phone
+        
+        
+
+        const result = await query('SELECT create_user_and_customer($1, $2, $3, $4, $5, $6)',
+        [username,password, firstname, lastname, email, phone])
+
+        const rows = result.rows ? result.rows : []
+        console.log(rows)
+        res.status(200).json(rows)
+    } catch (error) {
+        console.log(error)
+        res.statusMessage = error
+        res.status(500).json({error: error})
+   }
+})
+
 
 // update a customer
 customersRouter.put('/update/:customer_id', async (req, res) => {
