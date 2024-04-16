@@ -14,19 +14,23 @@ const createToken = (userName, role) => {
 }
 
 const verifyToken = async (req, res, next) =>{
-    console.log(req.cookies)
-    const access_token = req.cookies.access_token;
-    console.log("verification:::",req.cookies.access_token);
+
+    const authHeader = req.headers['authorization'];
+    let access_token = authHeader && authHeader.split(' ')[1];
+    access_token = access_token.slice(1, -1);
+    console.log("verification:::", access_token);
     if(!access_token){
         return res.status(401).json({message: "Access token not found"})
     }
     try{
         console.log("VERIFY::  ", access_token)
         const validToken = verify(access_token, SECRET_JWT_KEY);
+
         if(validToken){
             req.authenticated = true;
             req.user = validToken;
             console.log("THE TOKEN IS VALID")
+            console.log(req.user)
             return next();
         }
         else{
@@ -39,17 +43,6 @@ const verifyToken = async (req, res, next) =>{
 }
 
 
-// const registerUser = async (username, password, user_type) => {
-//     try {
-//         const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-//         //ONLY WORKS FOR EMPLOYEE REGISTRASION!!!!!!!!
-//         await query('INSERT INTO user_account(user_type, username, password) VALUES($1, $2, $3)', [user_type, username, hashedPassword]);
-//         return true; 
-//     } catch (error) {
-//         console.error("Error registering user:", error);
-//         return false; 
-//     }
-// };
 const SALT_ROUNDS = 7
 const registerUser = async (username, password, user_type) => {
     try {
@@ -114,6 +107,10 @@ const getUsers = (req, res, next) => {
         console.log("req.user:::::", req.user);
         console.log("req.user.ROLE:::",req.user.role);
         if (req.authenticated && req.user && req.user.role === 'admin') {
+            switch(req.user.role){
+                case "admin":
+                    return 
+            }
             console.log("TRYING TO READ DB")
             // const users = await query('SELECT * FROM user_account');
             // req.users = users; // Attach users data to the request object

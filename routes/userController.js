@@ -10,12 +10,7 @@ const usersRouter = express.Router()
 usersRouter.use(cookieParser());
 usersRouter.use(bodyParser.urlencoded({ extended: true }));
 usersRouter.use(bodyParser.json());
-usersRouter.use(cors())
-
-usersRouter.use(cors({
-    origin: 'http://127.0.0.1:5501',
-    credentials: true
-  }));
+// usersRouter.use(cors())
 
 //for testing
 usersRouter.get('/test' , async (req, res)=>{
@@ -51,8 +46,7 @@ usersRouter.post('/signup', async (req, res) => {
 // authentication
 usersRouter.post('/login', login);  
 
-usersRouter.get('/profile', verifyToken, async (req, res) => {
-    // Здесь можно продолжить выполнение кода для обработки запроса, если токен прошел верификацию
+usersRouter.get('/profile', verifyToken, getUsers, async (req, res) => {
     return res.status(200).json({ message: "Hello profile!" });
 });
 
