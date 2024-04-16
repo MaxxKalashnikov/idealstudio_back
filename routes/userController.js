@@ -4,7 +4,7 @@ const { query } = require('../helpers/db.js')
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const {createToken, verifyToken, registerUser, getUsers, authenticateUser, login, getCust}= require('./authentification/auth.js')
+const {createToken, verifyToken, registerUser, getUserRole, authenticateUser, login, isAdmin}= require('./authentification/auth.js')
 const cookieParser = require('cookie-parser');
 const usersRouter = express.Router()
 usersRouter.use(cookieParser());
@@ -46,17 +46,9 @@ usersRouter.post('/signup', async (req, res) => {
 // authentication
 usersRouter.post('/login', login);  
 
-usersRouter.get('/profile', verifyToken, getUsers, async (req, res) => {
-    return res.status(200).json({ message: "Hello profile!" });
+usersRouter.get('/profile', verifyToken, async (req, res) => {
+    return res.status(200).json({ message: req.user.role });
 });
-
-// usersRouter.get('/profile',verifyToken, getUsers, async (req, res) => {
-//     res.status(201).json({ message: "ОК" });
-//     // const filePath = path.resolve(__dirname, pathToProfile);
-//     // // Отправка файла в качестве ответа
-//     // res.sendFile(filePath);
-// });
-
 
 
 module.exports = { usersRouter }

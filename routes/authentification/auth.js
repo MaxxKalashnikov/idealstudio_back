@@ -64,7 +64,7 @@ async function login(req, res) {
         if (user) {
             accessToken = createToken(username, user.rows[0].user_type);
              // Pass the user's role here
-            res.cookie('access_token', accessToken, { httpOnly: true });
+            // res.cookie('access_token', accessToken, { httpOnly: true });
             res.status(200).json({ message: 'Login successful', token: accessToken });
         } else {
             res.status(401).json({ message: 'Invalid username or password' });
@@ -80,7 +80,7 @@ const authenticateUser = async (username, password) => {
         console.log(username)
         const user = await query("select * from user_account where username = $1", [username]);
         let employeeUserType = ''
-        if(user.rows[0].user_type == "employee"){
+        if(user.rows[0].user_type === 'employee'){
             employeeUserType = await query("SELECT e.employee_type FROM employee e LEFT JOIN user_account u ON e.user_account_id = u.user_account_id WHERE u.username = $1", [username])
             console.log(employeeUserType.rows[0].employee_type)
             user.rows[0].user_type = employeeUserType.rows[0].employee_type
@@ -100,43 +100,90 @@ const authenticateUser = async (username, password) => {
 };
 
 // this func is for testing access rights and checks that db rw is working 
-const getUsers = (req, res, next) => {
+const getUserRole = (req, res, next) => {
     try {
         // Check if user is authenticated and has a role
         console.log("req.authenticated:::::", req.authenticated);
         console.log("req.user:::::", req.user);
         console.log("req.user.ROLE:::",req.user.role);
-        if (req.authenticated && req.user && req.user.role === 'admin') {
-            switch(req.user.role){
-                case "admin":
-                    return 
-            }
-            console.log("TRYING TO READ DB")
+
+        return req.user.role
+        // if (req.authenticated && req.user && req.user.role === 'admin') {
+        //     switch(req.user.role){
+        //         case "admin":
+        //             return req.user.role
+        //     }
+        //     console.log("TRYING TO READ DB")
             // const users = await query('SELECT * FROM user_account');
             // req.users = users; // Attach users data to the request object
-            next(); // Proceed to the next middleware or route handler
-        } else {
-            // If user is not authenticated or doesn't have admin role, send forbidden error
-            return res.status(403).json({ message: 'Access forbidden: Only admin can access this resource' });
-        }
+        //     next(); // Proceed to the next middleware or route handler
+        // } else {
+        //     // If user is not authenticated or doesn't have admin role, send forbidden error
+        //     return res.status(403).json({ message: 'Access forbidden: Only admin can access this resource' });
+        // }
     } catch (error) {
         console.error('Error fetching users:', error);
         return res.status(500).json({ message: 'Failed to fetch users' });
     }
 };
 
-const getCust = async()=>{
-    try{
-        const result = await query("SELECT * FROM user_account");
-        const rows = result.rows ? result.rows : [];
-        res.status(200).json(rows);
-    }catch(error){
-        console.log(error);
-        res.statusMessage = error;
-        res.status(500).json({ error: error });
+const isAdmin = (req, res, next)=>{
+    try {
+        // Check if user is authenticated and has a role
+        console.log("req.authenticated:::::", req.authenticated);
+        console.log("req.user:::::", req.user);
+        console.log("req.user.ROLE:::",req.user.role);
+        if (req.authenticated && req.user && req.user.role === 'admin') {
+            return res.status(200).json({ message: "hello admin" });
+        } else {
+            // If user is not authenticated or doesn't have admin role, send forbidden error
+            // return res.status(403).json({ message: 'Access forbidden: Only admin can access this resource' });
+            next()
+        }
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return res.status(500).json({ message: 'Failed to fetch users' });
+    }
+}
+
+const isCustomer = (req, res, next)=>{
+    try {
+        // Check if user is authenticated and has a role
+        console.log("req.authenticated:::::", req.authenticated);
+        console.log("req.user:::::", req.user);
+        console.log("req.user.ROLE:::",req.user.role);
+        if (req.authenticated && req.user && req.user.role === 'customer') {
+            return res.status(200).json({ message: "hello customer" });
+        } else {
+            // If user is not authenticated or doesn't have admin role, send forbidden error
+            // return res.status(403).json({ message: 'Access forbidden: Only admin can access this resource' });
+            next()
+        }
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return res.status(500).json({ message: 'Failed to fetch users' });
+    }
+}
+
+const isEmployee = (req, res, next)=>{
+    try {
+        // Check if user is authenticated and has a role
+        console.log("req.authenticated:::::", req.authenticated);
+        console.log("req.user:::::", req.user);
+        console.log("req.user.ROLE:::",req.user.role);
+        if (req.authenticated && req.user && req.user.role === 'employee') {
+            return res.status(200).json({ message: "hello employee" });
+        } else {
+            // If user is not authenticated or doesn't have admin role, send forbidden error
+            // return res.status(403).json({ message: 'Access forbidden: Only admin can access this resource' });
+            next()
+        }
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return res.status(500).json({ message: 'Failed to fetch users' });
     }
 }
 
 
 
-module.exports = { getCust, createToken, verifyToken, registerUser, authenticateUser, getUsers, login };
+module.exports = { isAdmin, createToken, verifyToken, registerUser, authenticateUser, getUserRole, login };

@@ -1,4 +1,5 @@
 const express = require('express')
+const bcrypt = require('bcrypt');
 const { query } = require('../helpers/db.js')
 const customersRouter = express.Router()
 
@@ -52,7 +53,6 @@ customersRouter.post('/new', async (req, res) => {
         res.status(500).json({error: error})
    }
 })
-
 // add new customer account
 customersRouter.post('/account/new', async (req, res) => {
     try {
@@ -62,11 +62,12 @@ customersRouter.post('/account/new', async (req, res) => {
         const lastname = req.body.lastname
         const email = req.body.email
         const phone = req.body.phone
-        
+
+        const hashedPassword = await bcrypt.hash(password, 10);
         
 
         const result = await query('SELECT create_user_and_customer($1, $2, $3, $4, $5, $6)',
-        [username,password, firstname, lastname, email, phone])
+        [username, hashedPassword, firstname, lastname, email, phone])
 
         const rows = result.rows ? result.rows : []
         console.log(rows)
