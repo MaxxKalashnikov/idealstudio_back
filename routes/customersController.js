@@ -83,6 +83,7 @@ customersRouter.post('/account/new', async (req, res) => {
 // update a customer
 customersRouter.put('/update/:customer_id', async (req, res) => {
     try {
+        console.log("EMPLOYEE::: ", req )
         const customer_id = req.params.customer_id
         const user_account_id = req.body.user_account_id
         const firstname = req.body.firstname

@@ -32,11 +32,11 @@ servicesRouter.get('/:service_id', async (req, res) => {
 servicesRouter.post('/new', async (req, res) => {
     try {
         // Extracting data from the request body
-        const { service_name, service_description, service_price } = req.body;
+        const { service_name, service_description, service_price, category } = req.body;
 
         // Running a database query to insert a new service
-        const result = await query('INSERT INTO service (service_name, service_description, service_price) VALUES ($1, $2, $3) RETURNING *', 
-                                    [service_name, service_description, service_price]);
+        const result = await query('INSERT INTO service (service_name, description, price, category, is_available) VALUES ($1, $2, $3, $4, $5) RETURNING *', 
+                                    [service_name, service_description, service_price, category, true]);
 
         const rows = result.rows ? result.rows : [];
         res.status(200).json(rows);
@@ -55,7 +55,7 @@ servicesRouter.put('/update/:service_id', async (req, res) => {
         const { serviceName, serviceDescription, servicePrice } = req.body;
 
         // Running a database query to update service information
-        const result = await query('UPDATE service SET service_name = $1, service_description = $2, service_price = $3 WHERE service_id = $4 RETURNING *', 
+        const result = await query('UPDATE service SET service_name = $1, description = $2, price = $3 WHERE service_id = $4 RETURNING *', 
                                     [serviceName, serviceDescription, servicePrice, req.params.service_id]);
 
         const rows = result.rows ? result.rows : [];

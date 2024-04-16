@@ -1,7 +1,13 @@
 const express = require('express')
 const { query } = require('../helpers/db.js')
 const employeesRouter = express.Router()
+const bcrypt = require('bcrypt');
 
+// Function to hash password
+const hashPassword = async (password) => {
+    const SALT_ROUNDS = 10; // Adjust the number of salt rounds as needed
+    return await bcrypt.hash(password, parseInt(process.env.SALT_ROUNDS));
+};
 // get all employees
 employeesRouter.get('/', async (req, res) => {
     try {
@@ -34,6 +40,7 @@ employeesRouter.get('/:employee_id', async (req, res) => {
 // add new employee
 employeesRouter.post('/new', async (req, res) => {
     try {
+        console.log("EMPLOYEE::: ", req.body )
         const username = req.body.username
         const password = req.body.password
         const firstname = req.body.firstname
@@ -43,10 +50,12 @@ employeesRouter.post('/new', async (req, res) => {
         const employee_type = req.body.employee_type
         const specialization = req.body.specialization
         
-       
+        // Hash the password
+        const hashedPassword = await hashPassword(password);
 
+        // Insert the user and employee
         const result = await query('SELECT create_user_and_employee($1, $2, $3, $4, $5, $6, $7, $8);',
-        [username, password, firstname, lastname, email, phone, employee_type, specialization])
+        [username, hashedPassword, firstname, lastname, email, phone, employee_type, specialization])
 
         const rows = result.rows ? result.rows : []
         res.status(200).json(rows[0])
