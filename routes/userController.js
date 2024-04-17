@@ -47,8 +47,12 @@ usersRouter.post('/signup', async (req, res) => {
 usersRouter.post('/login', login);  
 
 usersRouter.get('/profile', verifyToken, async (req, res) => {
-    return res.status(200).json({ message: req.user.role });
+    return res.status(200).json({ 
+        role: req.user.role,
+        id: req.user.user_account_id
+     });
 });
+
 
 
 module.exports = { usersRouter }

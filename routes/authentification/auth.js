@@ -5,9 +5,9 @@ const bcrypt = require('bcrypt');
 const pgp = require('pg-promise')();
 const { query } = require('../../helpers/db.js');
 
-const createToken = (userName, role) => {
+const createToken = (userName, role, uid) => {
     console.log("ROLEEE::::   ",role);
-    const accessToken = sign({ userName: userName, role: role }, SECRET_JWT_KEY, {
+    const accessToken = sign({ userName: userName, role: role, user_account_id: uid}, SECRET_JWT_KEY, {
         expiresIn: '1h',
     });
     return accessToken;
@@ -62,7 +62,7 @@ async function login(req, res) {
         const user = await authenticateUser(username, password);
         let accessToken = ''
         if (user) {
-            accessToken = createToken(username, user.rows[0].user_type);
+            accessToken = createToken(username, user.rows[0].user_type, user.rows[0].user_account_id);
              // Pass the user's role here
             // res.cookie('access_token', accessToken, { httpOnly: true });
             res.status(200).json({ message: 'Login successful', token: accessToken });
