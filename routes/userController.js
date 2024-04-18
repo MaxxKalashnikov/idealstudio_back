@@ -49,7 +49,8 @@ usersRouter.post('/login', login);
 usersRouter.get('/profile', verifyToken, async (req, res) => {
     return res.status(200).json({ 
         role: req.user.role,
-        id: req.user.user_account_id
+        id: req.user.user_account_id,
+        username: req.user.userName
      });
 });
 

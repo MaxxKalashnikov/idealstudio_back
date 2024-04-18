@@ -18,7 +18,7 @@ appointmentsRouter.get('/all', async (req, res) => {
 //get details for certain master, depeneds on username
 appointmentsRouter.get('/my/:username', async (req, res) => {
     try {
-        const result = await query('SELECT * FROM get_appointment_details_by_username($1);', [req.params.username])
+        const result = await query('SELECT * FROM get_appointment_by_username($1);', [req.params.username])
         const rows = result.rows ? result.rows : [] 
         res.status(200).json(rows)
     } catch (error) {

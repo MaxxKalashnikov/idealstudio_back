@@ -32,7 +32,7 @@ servicesRouter.get('/:service_id', async (req, res) => {
 servicesRouter.post('/new', async (req, res) => {
     try {
         // Extracting data from the request body
-        const { service_name, service_description, service_price, category } = req.body;
+        const { service_name, category, service_price, service_description } = req.body;
 
         // Running a database query to insert a new service
         const result = await query('INSERT INTO service (service_name, description, price, category, is_available) VALUES ($1, $2, $3, $4, $5) RETURNING *', 
