@@ -58,8 +58,18 @@ CREATE TABLE service(
 	is_available BOOLEAN NOT NULL
 );
 
---INSERT INTO service (service_name, category, description, price, is_available)
---VALUES ('Haircut', 'Hair', 'Basic haircut service', 20.00, true);
+-- INSERT INTO service (service_name, category, description, price, is_available) VALUES
+-- ('Hygienic manicure for women', 'manicure', 'A manicure specifically tailored for women, focusing on nail care and hygiene.', 25.00, true),
+-- ('Hygienic manicure for men', 'manicure', 'A manicure designed for men, emphasizing nail care and hygiene.', 30.00, true),
+-- ('Removal of old foreign coating', 'manicure', 'Service to remove any existing foreign coating from the nails.', 10.00, true),
+-- ('Manicure + gel polish coating (short, medium nails)', 'manicure', 'Gel polish coating and alignment for short to medium length nails.', 50.00, true),
+-- ('Manicure + gel polish coating (long nails)', 'manicure', 'A manicure service including gel polish coating and alignment specially for long nails.', 60.00, true),
+-- ('Extension of four or more nails', 'manicure', 'Service to extend four or more nails using artificial materials.', 70.00, true),
+-- ('Hygienic pedicure (treatment of toes and soles) for women', 'pedicure', 'A pedicure focused on womens feet, addressing toe and sole care along with hygiene.', 50.00, true),
+-- ('Hygienic pedicure for women (treatment of toes and soles) + coating', 'pedicure', 'A pedicure service for women including treatment of toes and soles, along with the application of a coating.', 70.00, true),
+-- ('Hygienic pedicure for men (treatment of toes and soles)', 'pedicure', 'A pedicure service specifically designed for men, focusing on toe and sole care and hygiene.', 70.00, true);
+
+
 
 -- timeslot
 CREATE TABLE timeslot (
