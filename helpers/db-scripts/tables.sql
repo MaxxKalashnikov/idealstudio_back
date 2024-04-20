@@ -58,6 +58,10 @@ CREATE TABLE service(
 	is_available BOOLEAN NOT NULL
 );
 
+-- firstly run this to set id counter back to 1:
+-- ALTER SEQUENCE service_service_id_seq RESTART WITH 1;
+
+-- secondly run this insert with correct information and prices
 -- INSERT INTO service (service_name, category, description, price, is_available) VALUES
 -- ('Hygienic manicure for women', 'manicure', 'A manicure specifically tailored for women, focusing on nail care and hygiene.', 25.00, true),
 -- ('Hygienic manicure for men', 'manicure', 'A manicure designed for men, emphasizing nail care and hygiene.', 30.00, true),
