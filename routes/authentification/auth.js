@@ -4,6 +4,7 @@ const SECRET_JWT_KEY = 'tisosalmeniaebali228';
 const bcrypt = require('bcrypt');
 const pgp = require('pg-promise')();
 const { query } = require('../../helpers/db.js');
+const crypto = require('crypto');
 
 const createToken = (userName, role, uid) => {
     console.log("ROLEEE::::   ",role);
@@ -184,6 +185,69 @@ const isEmployee = (req, res, next)=>{
     }
 }
 
+const forgotPassword = async (req, res, next)=>{
+    try {
+        //1. based on email or username we get user
+        let email = req.body.email;
+        let username = req.body.username;
+        let resetToken = ''
+        if (email) {
+            const isUser = await query('SELECT username FROM user_account JOIN customer c ON user_account.user_account_id = c.user_account_id WHERE c.email = $1;', [email]);
+            if (isUser.rows.length > 0) {
+                username = isUser.rows[0].username;
+                resetToken = await createResetToken(username)
+                console.log(resetToken)
+                res.status(200).json({resetToken: resetToken, email: email})
+            } else {
+                res.status(203).json({ message: 'There is no user with such email!' });
+            }
+        } else if (username) {
+            // case if there is username
+            const isUser = await query('select email from customer JOIN user_account u ON customer.user_account_id = u.user_account_id WHERE u.username = $1;', [username]);
+            if (isUser.rows.length > 0) {
+                email = isUser.rows[0].email;
+                resetToken = await createResetToken(username);
+                console.log(resetToken)
+                res.status(200).json({resetToken: resetToken, email: email})
+            } else {
+                res.status(203).json({ message: 'There is no user with such username!' });
+            }
+        } 
+    } catch (error) {
+        console.error('Error:', error);
+    }
+    
+}
 
+const resetPassword = (req, res, next)=>{
 
-module.exports = { isAdmin, createToken, verifyToken, registerUser, authenticateUser, getUserRole, login };
+}
+
+const createResetToken = async(username)=>{
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const encryptedRT = crypto.createHash('sha256').update(resetToken).digest('hex');
+    const currentDate = new Date();
+    console.log("plain token: "+resetToken)
+    console.log(encryptedRT)
+
+    const futureDate = new Date(currentDate.getTime() + 10 * 60 * 1000);
+
+    const dateString = futureDate.toLocaleString('en-FI', { timeZone: 'Europe/Helsinki' }).replace(',', '');
+
+    const [datePart, timePart] = dateString.split(' ');
+    const [day, month, year] = datePart.split('/');
+    let [hours, minutes, seconds] = timePart.split('.');
+    // hours = Number(hours) + 3;
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.000`;
+
+    console.log(formattedDate)
+    const un = await query("UPDATE user_account SET reset_token = $1, token_expires = $2 WHERE username = $3 returning token_expires;", [encryptedRT, formattedDate, username])
+    if(un.rows.length > 0){
+        return resetToken
+    }
+    else{
+        console.log('Some error occured, try again later')
+    }
+}
+
+module.exports = { forgotPassword, isAdmin, createToken, verifyToken, registerUser, authenticateUser, getUserRole, login };
