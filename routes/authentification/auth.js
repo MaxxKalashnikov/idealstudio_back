@@ -197,7 +197,7 @@ const forgotPassword = async (req, res, next)=>{
                 username = isUser.rows[0].username;
                 resetToken = await createResetToken(username)
                 console.log(resetToken)
-                res.status(200).json({resetToken: resetToken, email: email})
+                res.status(200).json({resetToken: resetToken, email: email, username: username})
             } else {
                 res.status(203).json({ message: 'There is no user with such email!' });
             }
@@ -208,7 +208,7 @@ const forgotPassword = async (req, res, next)=>{
                 email = isUser.rows[0].email;
                 resetToken = await createResetToken(username);
                 console.log(resetToken)
-                res.status(200).json({resetToken: resetToken, email: email})
+                res.status(200).json({resetToken: resetToken, email: email, username: username})
             } else {
                 res.status(203).json({ message: 'There is no user with such username!' });
             }
@@ -219,29 +219,54 @@ const forgotPassword = async (req, res, next)=>{
     
 }
 
-const resetPassword = (req, res, next)=>{
+const resetPassword = async (req, res, next)=>{
+    try{
+        const token = crypto.createHash('sha256').update(req.params.token).digest('hex');
+        const isuser = await query('select token_expires from reset where reset_token = $1;', [token])
 
+        if(isuser.rows.length > 0){
+            const timestamp = isuser.rows[0].token_expires;
+            const timeNow = Date.now();
+            if(timestamp > timeNow){
+                //in time
+                // const newPassword = await bcrypt.hash(req.body.password, SALT_ROUNDS);
+                // const result = await query('update user_account set password = $1 where reset_token = $2 returning username;', [newPassword, token])
+                // if(result.rows.length > 0){
+                //     res.status(200).json({message: "Your password has benn changed successfully!"})
+                // }
+                next()
+            }else{
+                res.status(400).json({message: "Your token has expired!"})
+            }
+        }else{
+            res.status(404).json({message: "User with such token not found!"})
+        }
+    }catch(e){
+
+    }
 }
 
 const createResetToken = async(username)=>{
     const resetToken = crypto.randomBytes(32).toString('hex');
     const encryptedRT = crypto.createHash('sha256').update(resetToken).digest('hex');
-    const currentDate = new Date();
+    const currentDate = Date.now() + 10 * 60 * 1000;
     console.log("plain token: "+resetToken)
-    console.log(encryptedRT)
+    console.log("encrypted token: "+encryptedRT)
 
-    const futureDate = new Date(currentDate.getTime() + 10 * 60 * 1000);
+    //this commented part rigth here creates a real timestamp to the db but we dont need to for now
+    // const futureDate = new Date(currentDate.getTime() + 10 * 60 * 1000);
+    // const dateString = futureDate.toLocaleString('en-FI', { timeZone: 'Europe/Helsinki' }).replace(',', '');
+    // const [datePart, timePart] = dateString.split(' ');
+    // const [day, month, year] = datePart.split('/');
+    // let [hours, minutes, seconds] = timePart.split('.')
+    // const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.000`;
 
-    const dateString = futureDate.toLocaleString('en-FI', { timeZone: 'Europe/Helsinki' }).replace(',', '');
-
-    const [datePart, timePart] = dateString.split(' ');
-    const [day, month, year] = datePart.split('/');
-    let [hours, minutes, seconds] = timePart.split('.');
-    // hours = Number(hours) + 3;
-    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.000`;
-
-    console.log(formattedDate)
-    const un = await query("UPDATE user_account SET reset_token = $1, token_expires = $2 WHERE username = $3 returning token_expires;", [encryptedRT, formattedDate, username])
+    console.log(currentDate)
+    const id = await query('select user_account_id from user_account where username = $1', [username])
+    if(id.rows.length < 1){
+        console.log('no such id')
+    }
+    const un = await query("SELECT insert_or_update_reset($1, $2, $3) as token_expires", [id.rows[0].user_account_id, encryptedRT, currentDate])
     if(un.rows.length > 0){
         return resetToken
     }
@@ -250,4 +275,4 @@ const createResetToken = async(username)=>{
     }
 }
 
-module.exports = { forgotPassword, isAdmin, createToken, verifyToken, registerUser, authenticateUser, getUserRole, login };
+module.exports = { resetPassword, forgotPassword, isAdmin, createToken, verifyToken, registerUser, authenticateUser, getUserRole, login };

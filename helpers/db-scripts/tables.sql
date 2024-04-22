@@ -132,3 +132,11 @@ CREATE TABLE reply(
 	author_id INT NOT NULL REFERENCES user_account(user_account_id) ON DELETE CASCADE,
 	post_id INT NOT NULL REFERENCES post(post_id) ON DELETE CASCADE
 );
+
+--reset (for storing reset tokens and their expiration time)
+CREATE TABLE reset(
+	reset_id SERIAL PRIMARY KEY,
+	user_account_id INT UNIQUE NOT NULL REFERENCES user_account(user_account_id) ON DELETE CASCADE,
+	reset_token VARCHAR(255),
+	token_expires bigint
+);
