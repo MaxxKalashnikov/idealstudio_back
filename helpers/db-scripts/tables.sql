@@ -1,7 +1,10 @@
--- user_account: the user_type is either employee ot customer
+ -- the user_type can be admin, employee or customer
+CREATE TYPE UserType AS ENUM ('admin','employee', 'customer');
+
+-- user_account
 CREATE TABLE user_account(
 	user_account_id SERIAL PRIMARY KEY,
-	user_type VARCHAR(20) NOT NULL CHECK (user_type IN ('employee', 'customer')),
+	user_type UserType NOT NULL,
 	username VARCHAR(255) NOT NULL UNIQUE,
 	password VARCHAR(255) NOT NULL,
 	profile_picture_url VARCHAR(2048)
@@ -14,6 +17,9 @@ CREATE TABLE user_account(
 -- VALUES ('customer', 'helmi_paskajarvi', '$2b$10$k1r2s.Jk4KjauJMPJ6Pk5eeNLNyyl3kc0XvumhcxmpIC9ncX9YNs6', NULL); 
 --password is 0000 and tis one in the example is hashed
 
+-- employee specialization
+CREATE TYPE EmployeeSpecializaion AS ENUM ('pedicure', 'manicure', 'both');
+
 -- employee: The employee needs to have a user_account first
 CREATE TABLE employee(
 	employee_id SERIAL PRIMARY KEY,
@@ -21,8 +27,7 @@ CREATE TABLE employee(
 	lastname VARCHAR(255) NOT NULL,
 	email VARCHAR(255) NOT NULL,
 	phone VARCHAR(20) NOT NULL,
-	employee_type varchar(20) NOT NULL,
-	specialization VARCHAR(20) NOT NULL,
+	specialization EmployeeSpecializaion NOT NULL,
 	is_active BOOLEAN NOT NULL DEFAULT true,
 	user_account_id INT UNIQUE NOT NULL REFERENCES user_account(user_account_id),
 	CONSTRAINT valid_email CHECK (email ~* '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'),
