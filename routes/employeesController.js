@@ -47,15 +47,15 @@ employeesRouter.post('/new', async (req, res) => {
         const lastname = req.body.lastname
         const email = req.body.email
         const phone = req.body.phone
-        const employee_type = req.body.employee_type
+        //const employee_type = req.body.employee_type
         const specialization = req.body.specialization
         
         // Hash the password
         const hashedPassword = await hashPassword(password);
 
         // Insert the user and employee
-        const result = await query('SELECT create_user_and_employee($1, $2, $3, $4, $5, $6, $7, $8);',
-        [username, hashedPassword, firstname, lastname, email, phone, employee_type, specialization])
+        const result = await query('SELECT create_user_and_employee($1, $2, $3, $4, $5, $6, $7);',
+        [username, hashedPassword, firstname, lastname, email, phone, specialization])
 
         const rows = result.rows ? result.rows : []
         res.status(200).json(rows[0])
@@ -76,12 +76,12 @@ employeesRouter.put('/update/:employee_id', async (req, res) => {
         const lastname = req.body.lastname
         const email = req.body.email
         const phone = req.body.phone
-        const employee_type = req.body.employee_type
+        //const employee_type = req.body.employee_type
         const specialization = req.body.specialization
         const is_active = req.body.is_active
 
-        const result = await query('update employee set user_account_id=($1), firstname=($2), lastname=($3), email=($4), phone=($5), employee_type=($6), specialization=($7), is_active=($8) where employee_id=($9) returning *',
-        [user_account_id, firstname, lastname, email, phone, employee_type, specialization, is_active, employee_id])
+        const result = await query('update employee set user_account_id=($1), firstname=($2), lastname=($3), email=($4), phone=($5), specialization=($6), is_active=($7) where employee_id=($8) returning *',
+        [user_account_id, firstname, lastname, email, phone, specialization, is_active, employee_id])
 
         const rows = result.rows ? result.rows : []
         res.status(200).json(rows)

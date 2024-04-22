@@ -95,8 +95,7 @@ Content-Type: application/json
     "lastname" : "test3",
     "email" : "test3@ammc.com",
     "phone" : "0384740480",
-    "employee_type" : "employee",
-    "specialization" : "Pedicure"
+    "specialization" : "pedicure"
 }
 
 ### update an employee
@@ -109,8 +108,7 @@ Content-Type: application/json
     "lastname" : "test",
     "email" : "test@ammc.com",
     "phone" : "0384740400",
-    "employee_type" : "regular",
-    "specialization" : "Pedicure",
+    "specialization" : "pedicure",
     "is_active": false
 }
 

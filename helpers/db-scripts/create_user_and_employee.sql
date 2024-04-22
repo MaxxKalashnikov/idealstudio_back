@@ -5,7 +5,7 @@ CREATE OR REPLACE FUNCTION create_user_and_employee(
     lastname_param VARCHAR(255),
     email_param VARCHAR(255),
     phone_param VARCHAR(20),
-    specialization_param VARCHAR(20)
+    specialization_param EmployeeSpecializaion
 )
 RETURNS VOID 
 LANGUAGE plpgsql
@@ -19,7 +19,7 @@ BEGIN
     RETURNING user_account_id INTO user_id;
 
     -- employee
-    INSERT INTO employee (firstname, lastname, email, phone, employee_type, specialization, user_account_id)
+    INSERT INTO employee (firstname, lastname, email, phone, specialization, user_account_id)
     VALUES (firstname_param, lastname_param, email_param, phone_param, specialization_param, user_id);
 END;
 $$;
