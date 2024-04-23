@@ -80,13 +80,6 @@ const authenticateUser = async (username, password) => {
     try {
         console.log(username)
         const user = await query("select * from user_account where username = $1", [username]);
-        let employeeUserType = ''
-        if(user.rows[0].user_type === 'employee'){
-            employeeUserType = await query("SELECT e.employee_type FROM employee e LEFT JOIN user_account u ON e.user_account_id = u.user_account_id WHERE u.username = $1", [username])
-            console.log(employeeUserType.rows[0].employee_type)
-            user.rows[0].user_type = employeeUserType.rows[0].employee_type
-        }
-        // console.log(user)
         if (user) {
             const passwordMatch = await bcrypt.compare(password, user.rows[0].password);//it took me 1 hour to fix this bug with rows[0]...
             if (passwordMatch) {

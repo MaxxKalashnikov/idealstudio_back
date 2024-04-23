@@ -139,7 +139,7 @@ CREATE TABLE reply(
 );
 
 --reset (for storing reset tokens and their expiration time)
-CREATE TABLE reset(
+CREATE TABLE password_reset(
 	reset_id SERIAL PRIMARY KEY,
 	user_account_id INT UNIQUE NOT NULL REFERENCES user_account(user_account_id) ON DELETE CASCADE,
 	reset_token VARCHAR(255),

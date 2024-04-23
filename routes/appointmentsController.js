@@ -31,8 +31,10 @@ appointmentsRouter.get('/my/:username', async (req, res) => {
 //get more details for appointment
 appointmentsRouter.get('/more/:appointment_id', async (req, res) => {
     try {
+
         const result = await query('SELECT * FROM get_appointment_details_by_id($1);', [req.params.appointment_id])
         const rows = result.rows ? result.rows : [] 
+
         res.status(200).json(rows)
     } catch (error) {
         console.log(error)

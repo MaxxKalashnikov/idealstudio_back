@@ -12,7 +12,7 @@ RETURNS TABLE (
     employee_lastname VARCHAR(255),
     employee_email VARCHAR(255),
     employee_phone VARCHAR(20),
-    employee_specialization VARCHAR(20),
+    employee_specialization EmployeeSpecializaion,
     customer_firstname VARCHAR(255),
     customer_lastname VARCHAR(255),
     customer_email VARCHAR(255),
