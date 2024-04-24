@@ -4,7 +4,7 @@ const { query } = require('../helpers/db.js')
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const {createToken, verifyToken, registerUser, getUserRole, authenticateUser, login, isAdmin, forgotPassword, resetPassword}= require('./authentification/auth.js')
+const {resetPassword, createToken, verifyToken, registerUser, getUserRole, authenticateUser, login, isAdmin, forgotPassword, compareToken}= require('./authentification/auth.js')
 const cookieParser = require('cookie-parser');
 const usersRouter = express.Router()
 usersRouter.use(cookieParser());
@@ -55,8 +55,10 @@ usersRouter.get('/profile', verifyToken, async (req, res) => {
 });
 
 usersRouter.post('/forgotpassword', forgotPassword)
-usersRouter.get('/resetpassword/:token', resetPassword, (req, res)=>{
+usersRouter.post('/resetpassword/:token', compareToken, (req, res)=>{
     res.status(203).json({message: 'success'})
 })
+
+usersRouter.post('/newpassword', resetPassword)
 
 module.exports = { usersRouter }

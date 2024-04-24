@@ -8,14 +8,14 @@ AS $$
 DECLARE
     token_expires_out BIGINT;
 BEGIN
-    UPDATE reset 
+    UPDATE password_reset 
     SET reset_token = reset_token_in, token_expires = token_expires_in 
     WHERE user_account_id = user_account_id_in
     RETURNING token_expires INTO token_expires_out;
 
     IF NOT FOUND THEN
         BEGIN
-            INSERT INTO reset (user_account_id, reset_token, token_expires) 
+            INSERT INTO password_reset (user_account_id, reset_token, token_expires) 
             VALUES (user_account_id_in, reset_token_in, token_expires_in) 
             RETURNING token_expires INTO token_expires_out;
         EXCEPTION

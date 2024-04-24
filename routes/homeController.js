@@ -6,12 +6,11 @@ const homeRouter = express.Router()
 homeRouter.get('/:employee_id?', async (req, res) => {
     try {
         //data for personal info div
-        const result1 = await query('SELECT firstname, lastname, email, phone FROM employee where employee_id = $1;', [1])
+        const result1 = await query('SELECT firstname, lastname, email, phone FROM employee where employee_id = $1;', [req.params.employee_id])
         const rows1 = result1.rows ? result1.rows : []
         //data for statistics
         const result2 = await query('select * from get_statistics();')
         const rows2 = result2.rows ? result2.rows : []
-
         const responseData = {
             personalInfo: rows1,
             statistics: rows2

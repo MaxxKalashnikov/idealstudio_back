@@ -212,21 +212,16 @@ const forgotPassword = async (req, res, next)=>{
     
 }
 
-const resetPassword = async (req, res, next)=>{
+const compareToken = async (req, res, next)=>{
     try{
         const token = crypto.createHash('sha256').update(req.params.token).digest('hex');
-        const isuser = await query('select token_expires from reset where reset_token = $1;', [token])
+        const isuser = await query('select token_expires from password_reset where reset_token = $1;', [token])
 
         if(isuser.rows.length > 0){
             const timestamp = isuser.rows[0].token_expires;
             const timeNow = Date.now();
             if(timestamp > timeNow){
                 //in time
-                // const newPassword = await bcrypt.hash(req.body.password, SALT_ROUNDS);
-                // const result = await query('update user_account set password = $1 where reset_token = $2 returning username;', [newPassword, token])
-                // if(result.rows.length > 0){
-                //     res.status(200).json({message: "Your password has benn changed successfully!"})
-                // }
                 next()
             }else{
                 res.status(400).json({message: "Your token has expired!"})
@@ -236,6 +231,24 @@ const resetPassword = async (req, res, next)=>{
         }
     }catch(e){
 
+    }
+}
+
+const resetPassword = async(req, res, next) =>{
+    try{
+        const newPassword = await bcrypt.hash(req.body.password, SALT_ROUNDS);
+        console.log(req.body.password + "\n" + req.body.token)
+        const token = crypto.createHash('sha256').update(req.body.token).digest('hex');
+        const result = await query('UPDATE user_account SET password = $1 FROM password_reset WHERE user_account.user_account_id = password_reset.user_account_id AND password_reset.reset_token = $2 RETURNING user_account.username;', [newPassword, token])
+        if(result.rows.length > 0){
+            await query('delete from password_reset where reset_token = $1', [token])
+            res.status(200).json({message: "Your password has been changed successfully!"})
+        }
+        else{
+            res.status(203).json({message: "Something went wrong"})
+        }
+    }catch(e){
+        console.log(e)
     }
 }
 
@@ -268,4 +281,4 @@ const createResetToken = async(username)=>{
     }
 }
 
-module.exports = { resetPassword, forgotPassword, isAdmin, createToken, verifyToken, registerUser, authenticateUser, getUserRole, login };
+module.exports = {resetPassword, compareToken, forgotPassword, isAdmin, createToken, verifyToken, registerUser, authenticateUser, getUserRole, login };
