@@ -17,6 +17,23 @@ customersRouter.get('/', async (req, res) => {
     }
 })
 
+customersRouter.get('/profile/:user_id', async (req, res) => {
+    try {
+        const result = await query('select firstname, lastname, email, phone from customer where user_account_id = $1', 
+        [req.params.user_id])
+        // in case the result may have no rows
+        const rows = result.rows ? result.rows : []
+        const responseData = {
+            personalInfo: rows,
+        };
+        res.status(200).json(responseData)
+    } catch (error) {
+        console.log(error)
+        res.statusMessage = error
+        res.status(500).json({error: error})
+    }
+})
+
 // get customer by id
 customersRouter.get('/:customer_id', async (req, res) => {
     try {

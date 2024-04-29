@@ -47,8 +47,11 @@ appointmentsRouter.get('/more/:appointment_id', async (req, res) => {
 appointmentsRouter.put('/update/:appointment_id', async (req, res) => {
     try {
         const result = await query('update appointment set is_canceled=($1) where appointment_id=($2)',
-        [req.body.is_canceled, req.params.appointment_id])
-
+        [req.body.is_canceled, req.params.appointment_id])    
+        const tmp = await query('select timeslot_id from appointment where appointment_id = $1', [req.params.appointment_id])
+        if(tmp.rows[0].timeslot_id){
+            const pipi = await query('update timeslot set is_available = $1 where timeslot_id = $2', [req.body.is_canceled, tmp.rows[0].timeslot_id])
+        }
         res.status(200).json({appointment_id: req.params.appointment_id})
     } catch (error) {
         console.log(error)

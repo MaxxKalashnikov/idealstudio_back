@@ -49,13 +49,13 @@ employeesRouter.post('/new', async (req, res) => {
         const phone = req.body.phone
         //const employee_type = req.body.employee_type
         const specialization = req.body.specialization
-        
+        const picture = req.body.profile_picture_url
         // Hash the password
         const hashedPassword = await hashPassword(password);
 
         // Insert the user and employee
-        const result = await query('SELECT create_user_and_employee($1, $2, $3, $4, $5, $6, $7);',
-        [username, hashedPassword, firstname, lastname, email, phone, specialization])
+        const result = await query('SELECT create_user_and_employee($1, $2, $3, $4, $5, $6, $7, $8);',
+        [username, hashedPassword, firstname, lastname, email, phone, picture, specialization])
 
         const rows = result.rows ? result.rows : []
         res.status(200).json(rows[0])
@@ -107,5 +107,14 @@ employeesRouter.delete('/delete/:employee_id', async (req, res) => {
     }
 })
 
+employeesRouter.get('/get/more', async(req, res)=>{
+    try{
+        const result = await query('SELECT employee.*, user_account.user_type, user_account.profile_picture_url FROM employee INNER JOIN user_account ON employee.user_account_id = user_account.user_account_id;')
+        const rows = result.rows ? result.rows : []
+        res.status(200).json(rows)
+    }catch(err){
+        res.status(203).json({error: err})
+    }
+})
 
 module.exports= { employeesRouter }

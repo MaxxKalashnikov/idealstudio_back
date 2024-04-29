@@ -5,6 +5,7 @@ CREATE OR REPLACE FUNCTION create_user_and_employee(
     lastname_param VARCHAR(255),
     email_param VARCHAR(255),
     phone_param VARCHAR(20),
+    picture VARCHAR(2048),
     specialization_param EmployeeSpecializaion
 )
 RETURNS VOID 
@@ -14,8 +15,8 @@ DECLARE
     user_id INT;
 BEGIN
 	-- user account
-    INSERT INTO user_account (user_type, username, password)
-    VALUES ('employee', username_param, password_param)
+    INSERT INTO user_account (user_type, username, password, profile_picture_url)
+    VALUES ('employee', username_param, password_param, picture)
     RETURNING user_account_id INTO user_id;
 
     -- employee
