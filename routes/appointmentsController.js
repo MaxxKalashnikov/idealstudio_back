@@ -28,6 +28,21 @@ appointmentsRouter.get('/my/:username', async (req, res) => {
     }
 })
 
+appointmentsRouter.get('/customer/:id', async (req, res) => {
+    try {
+        const id = Number(req.params.id)
+        const result = await query('SELECT * FROM get_appointment_customer($1);', [id])
+        console.log(result)
+        const rows = result.rows ? result.rows : [] 
+        console.log(rows)
+        res.status(200).json(rows)
+    } catch (error) {
+        console.log(error)
+        res.statusMessage = error
+        res.status(500).json({error: error})
+    }
+})
+
 //get more details for appointment
 appointmentsRouter.get('/more/:appointment_id', async (req, res) => {
     try {
